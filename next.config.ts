@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Ensure standalone output for Hostinger
+  output: 'standalone',
   poweredByHeader: false,
   reactStrictMode: true,
 

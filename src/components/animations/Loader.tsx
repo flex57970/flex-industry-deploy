@@ -3,22 +3,15 @@
 import { useEffect, useState } from 'react';
 
 export default function Loader() {
-  const [mounted, setMounted] = useState(false);
   const [hidden, setHidden] = useState(false);
-
-  // Only show loader after client mount to avoid hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Safety timeout: remove loader after 3s no matter what
   useEffect(() => {
-    if (!mounted) return;
     const timer = setTimeout(() => setHidden(true), 3000);
     return () => clearTimeout(timer);
-  }, [mounted]);
+  }, []);
 
-  if (!mounted || hidden) return null;
+  if (hidden) return null;
 
   return (
     <div

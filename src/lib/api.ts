@@ -51,20 +51,75 @@ export const contentAPI = {
 };
 
 // Media
+const CHUNK_SIZE = 4 * 1024 * 1024; // 4MB per chunk
+
 export const mediaAPI = {
-  upload: async (file: File, category: string, token: string) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('category', category);
+  upload: async (
+    file: File,
+    category: string,
+    token: string,
+    onProgress?: (percent: number) => void
+  ) => {
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+    const uploadId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
-    const res = await fetch(`${API_URL}/media/upload`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    });
+    // Small files (< 4MB): direct upload for speed
+    if (totalChunks <= 1) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', category);
 
-    if (!res.ok) throw new Error('Erreur upload');
-    return res.json();
+      const res = await fetch(`${API_URL}/media/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: 'Erreur upload' }));
+        throw new Error(err.message);
+      }
+      onProgress?.(100);
+      return res.json();
+    }
+
+    // Large files: chunked upload
+    let result = null;
+    for (let i = 0; i < totalChunks; i++) {
+      const start = i * CHUNK_SIZE;
+      const end = Math.min(start + CHUNK_SIZE, file.size);
+      const chunk = file.slice(start, end);
+
+      const formData = new FormData();
+      formData.append('chunk', chunk);
+      formData.append('uploadId', uploadId);
+      formData.append('chunkIndex', String(i));
+      formData.append('totalChunks', String(totalChunks));
+      formData.append('originalName', file.name);
+      formData.append('mimeType', file.type);
+      formData.append('totalSize', String(file.size));
+      formData.append('category', category);
+
+      const res = await fetch(`${API_URL}/media/upload/chunk`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: 'Erreur upload' }));
+        throw new Error(err.message);
+      }
+
+      const data = await res.json();
+      onProgress?.(Math.round(((i + 1) / totalChunks) * 100));
+
+      if (data.done) {
+        result = data.media;
+      }
+    }
+
+    return result;
   },
   getAll: (token: string, category?: string) =>
     fetchAPI(`/media${category ? `?category=${category}` : ''}`, { token }),

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Image as ImageIcon, Film, X, RefreshCw, Plus, Trash2, GripVertical } from 'lucide-react';
+import { Upload, Image as ImageIcon, Film, X, RefreshCw, Plus, Trash2, GripVertical, FolderOpen } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { contentAPI, mediaAPI } from '@/lib/api';
 
@@ -17,6 +17,16 @@ interface Content {
   mediaType: 'image' | 'video';
   order: number;
   isActive: boolean;
+}
+
+interface MediaItem {
+  _id: string;
+  filename: string;
+  originalName: string;
+  mimeType: string;
+  size: number;
+  url: string;
+  category: string;
 }
 
 const pages = ['home', 'immobilier', 'automobile', 'parfumerie'];
@@ -49,8 +59,6 @@ const defaultSections: Record<string, { section: string; label: string; mediaLab
   ],
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000';
-
 export default function AdminContents() {
   const { token } = useAuth();
   const [contents, setContents] = useState<Content[]>([]);
@@ -62,6 +70,12 @@ export default function AdminContents() {
   const [newSlotType, setNewSlotType] = useState<'gallery' | 'showcase' | 'custom'>('gallery');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadTargetRef = useRef<{ page: string; section: string } | null>(null);
+
+  // Media picker state
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
+  const [mediaPickerTarget, setMediaPickerTarget] = useState<{ page: string; section: string } | null>(null);
+  const [mediaLibrary, setMediaLibrary] = useState<MediaItem[]>([]);
+  const [loadingMedia, setLoadingMedia] = useState(false);
 
   const fetchContents = useCallback(async () => {
     if (!token) return;
@@ -77,6 +91,18 @@ export default function AdminContents() {
   useEffect(() => {
     fetchContents();
   }, [fetchContents]);
+
+  const fetchMediaLibrary = useCallback(async () => {
+    if (!token) return;
+    setLoadingMedia(true);
+    try {
+      const data = (await mediaAPI.getAll(token)) as MediaItem[];
+      setMediaLibrary(data);
+    } catch {
+    } finally {
+      setLoadingMedia(false);
+    }
+  }, [token]);
 
   // Build sections list: merge defaults with dynamic content from DB
   const getSections = (page: string) => {
@@ -105,6 +131,51 @@ export default function AdminContents() {
   const handleUploadClick = (page: string, section: string) => {
     uploadTargetRef.current = { page, section };
     fileInputRef.current?.click();
+  };
+
+  const openMediaPicker = (page: string, section: string) => {
+    setMediaPickerTarget({ page, section });
+    setShowMediaPicker(true);
+    fetchMediaLibrary();
+  };
+
+  const handleSelectMedia = async (media: MediaItem) => {
+    if (!token || !mediaPickerTarget) return;
+    const { page, section } = mediaPickerTarget;
+    setSaving(`${page}-${section}`);
+    setShowMediaPicker(false);
+
+    try {
+      const existing = getContentForSection(page, section);
+      const isVideo = media.mimeType.startsWith('video/');
+
+      if (existing) {
+        await contentAPI.update(
+          existing._id,
+          { mediaUrl: media.url, mediaType: isVideo ? 'video' : 'image' },
+          token
+        );
+      } else {
+        await contentAPI.create(
+          {
+            page,
+            section,
+            title: section.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
+            mediaUrl: media.url,
+            mediaType: isVideo ? 'video' : 'image',
+            isActive: true,
+            order: sections.length,
+          },
+          token
+        );
+      }
+      await fetchContents();
+    } catch (err) {
+      console.error('Select media failed:', err);
+    } finally {
+      setSaving(null);
+      setMediaPickerTarget(null);
+    }
   };
 
   const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -195,6 +266,8 @@ export default function AdminContents() {
     } catch {}
   };
 
+  const isVideoMime = (mimeType: string) => mimeType.startsWith('video/');
+
   const filledCount = sections.filter(s => getContentForSection(selectedPage, s.section)?.mediaUrl).length;
   const isDefaultSection = (section: string) => {
     const defaults = defaultSections[selectedPage] || [];
@@ -271,7 +344,6 @@ export default function AdminContents() {
             const hasMedia = content?.mediaUrl;
             const isSaving = saving === `${selectedPage}-${sec.section}`;
             const isVideo = content?.mediaType === 'video';
-            const mediaFullUrl = hasMedia ? `${API_URL}${content.mediaUrl}` : null;
             const canDelete = !isDefaultSection(sec.section);
 
             return (
@@ -293,7 +365,7 @@ export default function AdminContents() {
                     <>
                       {isVideo ? (
                         <video
-                          src={mediaFullUrl!}
+                          src={content.mediaUrl}
                           className="w-full h-full object-cover"
                           muted
                           playsInline
@@ -301,12 +373,12 @@ export default function AdminContents() {
                           onMouseOut={(e) => { const v = e.target as HTMLVideoElement; v.pause(); v.currentTime = 0; }}
                         />
                       ) : (
-                        <img src={mediaFullUrl!} alt={sec.label} className="w-full h-full object-cover" />
+                        <img src={content.mediaUrl} alt={sec.label} className="w-full h-full object-cover" />
                       )}
                       {/* Overlay actions */}
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                         <button
-                          onClick={() => handleUploadClick(selectedPage, sec.section)}
+                          onClick={() => openMediaPicker(selectedPage, sec.section)}
                           className="bg-white text-gray-900 text-[11px] px-3.5 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors flex items-center gap-1.5"
                         >
                           <RefreshCw className="w-3 h-3" />
@@ -327,18 +399,29 @@ export default function AdminContents() {
                       </div>
                     </>
                   ) : (
-                    <button
-                      onClick={() => handleUploadClick(selectedPage, sec.section)}
-                      className="flex flex-col items-center gap-2.5 text-gray-300 hover:text-gray-500 transition-all duration-200 cursor-pointer w-full h-full justify-center group/upload"
-                    >
-                      <div className="w-10 h-10 rounded-xl border-2 border-dashed border-gray-200 group-hover/upload:border-gray-300 flex items-center justify-center transition-colors">
-                        <Upload className="w-4 h-4" />
+                    <div className="flex flex-col items-center gap-3 w-full h-full justify-center">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => openMediaPicker(selectedPage, sec.section)}
+                          className="flex flex-col items-center gap-1.5 text-gray-300 hover:text-gray-500 transition-all duration-200 cursor-pointer group/pick px-4 py-2"
+                        >
+                          <div className="w-9 h-9 rounded-xl border-2 border-dashed border-gray-200 group-hover/pick:border-gray-300 flex items-center justify-center transition-colors">
+                            <FolderOpen className="w-4 h-4" />
+                          </div>
+                          <span className="text-[10px] font-medium">Bibliothèque</span>
+                        </button>
+                        <button
+                          onClick={() => handleUploadClick(selectedPage, sec.section)}
+                          className="flex flex-col items-center gap-1.5 text-gray-300 hover:text-gray-500 transition-all duration-200 cursor-pointer group/upload px-4 py-2"
+                        >
+                          <div className="w-9 h-9 rounded-xl border-2 border-dashed border-gray-200 group-hover/upload:border-gray-300 flex items-center justify-center transition-colors">
+                            <Upload className="w-4 h-4" />
+                          </div>
+                          <span className="text-[10px] font-medium">Upload</span>
+                        </button>
                       </div>
-                      <div className="text-center">
-                        <span className="text-[11px] font-medium block">{sec.mediaLabel}</span>
-                        <span className="text-[10px] text-gray-300 mt-0.5 block">Cliquer pour ajouter</span>
-                      </div>
-                    </button>
+                      <span className="text-[10px] text-gray-300">{sec.mediaLabel}</span>
+                    </div>
                   )}
                 </div>
 
@@ -393,6 +476,96 @@ export default function AdminContents() {
           </motion.button>
         </div>
       )}
+
+      {/* Media Picker Modal */}
+      <AnimatePresence>
+        {showMediaPicker && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+            onClick={() => { setShowMediaPicker(false); setMediaPickerTarget(null); }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[80vh] flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="px-8 pt-8 pb-4 border-b border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold tracking-tight">Bibliothèque média</h3>
+                    <p className="text-[13px] text-gray-400 mt-1">Sélectionnez un média à assigner à cet emplacement</p>
+                  </div>
+                  <button
+                    onClick={() => { setShowMediaPicker(false); setMediaPickerTarget(null); }}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-8">
+                {loadingMedia ? (
+                  <div className="flex items-center justify-center py-20">
+                    <div className="w-5 h-5 border-2 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
+                  </div>
+                ) : mediaLibrary.length === 0 ? (
+                  <div className="text-center py-20">
+                    <div className="w-14 h-14 rounded-2xl bg-[var(--color-warm)] flex items-center justify-center mx-auto mb-5">
+                      <ImageIcon className="w-6 h-6 text-gray-300" />
+                    </div>
+                    <p className="text-[14px] text-gray-500 font-medium mb-2">Aucun média</p>
+                    <p className="text-[13px] text-gray-400">Uploadez d&apos;abord des médias dans la section Médias.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {mediaLibrary.map((media) => (
+                      <button
+                        key={media._id}
+                        onClick={() => handleSelectMedia(media)}
+                        className="group/media relative aspect-square rounded-xl overflow-hidden border-2 border-transparent hover:border-gray-900 transition-all duration-200 cursor-pointer bg-[var(--color-warm)]"
+                      >
+                        {isVideoMime(media.mimeType) ? (
+                          <video src={media.url} className="w-full h-full object-cover" muted />
+                        ) : (
+                          <img src={media.url} alt={media.originalName} className="w-full h-full object-cover" />
+                        )}
+                        <div className="absolute inset-0 bg-black/0 group-hover/media:bg-black/30 transition-all duration-200" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/media:opacity-100 transition-opacity">
+                          <p className="text-[10px] text-white font-medium truncate">{media.originalName}</p>
+                        </div>
+                        <div className="absolute top-2 right-2 bg-black/40 backdrop-blur-sm rounded px-1.5 py-0.5">
+                          {isVideoMime(media.mimeType) ? (
+                            <Film className="w-3 h-3 text-white" />
+                          ) : (
+                            <ImageIcon className="w-3 h-3 text-white" />
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="px-8 py-4 border-t border-gray-100 flex justify-between items-center">
+                <p className="text-[12px] text-gray-400">{mediaLibrary.length} média(s) disponible(s)</p>
+                <button
+                  onClick={() => { setShowMediaPicker(false); setMediaPickerTarget(null); }}
+                  className="text-[13px] px-5 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Annuler
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Add Slot Modal */}
       <AnimatePresence>

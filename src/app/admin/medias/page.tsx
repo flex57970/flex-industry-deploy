@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Trash2, Image as ImageIcon, Film, CloudUpload } from 'lucide-react';
+import { Trash2, Image as ImageIcon, CloudUpload } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { mediaAPI } from '@/lib/api';
 
@@ -32,11 +32,13 @@ export default function AdminMedias() {
   const [medias, setMedias] = useState<Media[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadFileName, setUploadFileName] = useState('');
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchMedias = async () => {
+  const fetchMedias = useCallback(async () => {
     if (!token) return;
     try {
       const data = (await mediaAPI.getAll(token)) as Media[];
@@ -45,25 +47,36 @@ export default function AdminMedias() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     fetchMedias();
-  }, [token]);
+  }, [fetchMedias]);
 
   const filtered = selectedCategory === 'all' ? medias : medias.filter((m) => m.category === selectedCategory);
 
   const handleUpload = async (files: FileList | null) => {
     if (!files || !token) return;
     setUploading(true);
+    setUploadProgress(0);
+    const cat = selectedCategory === 'all' ? 'general' : selectedCategory;
     try {
-      for (const file of Array.from(files)) {
-        await mediaAPI.upload(file, selectedCategory === 'all' ? 'general' : selectedCategory, token);
+      const fileArray = Array.from(files);
+      for (let f = 0; f < fileArray.length; f++) {
+        const file = fileArray[f];
+        setUploadFileName(file.name);
+        await mediaAPI.upload(file, cat, token, (percent) => {
+          // Progress across all files
+          const fileProgress = (f / fileArray.length) * 100 + (percent / fileArray.length);
+          setUploadProgress(Math.round(fileProgress));
+        });
       }
       await fetchMedias();
     } catch {
     } finally {
       setUploading(false);
+      setUploadProgress(0);
+      setUploadFileName('');
     }
   };
 
@@ -136,15 +149,26 @@ export default function AdminMedias() {
         </div>
         <p className="text-[13px] text-gray-600 font-medium">
           {uploading ? (
-            <span className="flex items-center justify-center gap-2">
-              <span className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-              Upload en cours...
+            <span className="flex flex-col items-center gap-3">
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                Upload en cours... {uploadProgress}%
+              </span>
+              {uploadFileName && (
+                <span className="text-[11px] text-gray-400 truncate max-w-[250px]">{uploadFileName}</span>
+              )}
+              <span className="w-full max-w-[300px] h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <span
+                  className="h-full bg-gray-900 rounded-full transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </span>
             </span>
           ) : (
             'Glissez vos fichiers ici ou cliquez pour parcourir'
           )}
         </p>
-        <p className="text-[11px] text-gray-400 mt-1.5">JPG, PNG, SVG, MP4, MOV — Max 100MB</p>
+        <p className="text-[11px] text-gray-400 mt-1.5">JPG, PNG, GIF, WEBP, MP4, MOV, WEBM — Max 100MB</p>
       </div>
 
       {/* Filter tabs */}
@@ -187,17 +211,11 @@ export default function AdminMedias() {
               transition={{ delay: i * 0.03 }}
               className="group relative bg-white rounded-2xl border border-gray-100 overflow-hidden"
             >
-              <div className="aspect-square bg-[var(--color-warm)] flex items-center justify-center">
+              <div className="aspect-square bg-[var(--color-warm)] flex items-center justify-center overflow-hidden">
                 {isVideo(media.mimeType) ? (
-                  <div className="flex flex-col items-center gap-2">
-                    <Film className="w-6 h-6 text-gray-300" />
-                    <span className="text-[10px] text-gray-300 font-medium">Vidéo</span>
-                  </div>
+                  <video src={media.url} className="w-full h-full object-cover" muted />
                 ) : (
-                  <div className="flex flex-col items-center gap-2">
-                    <ImageIcon className="w-6 h-6 text-gray-300" />
-                    <span className="text-[10px] text-gray-300 font-medium">Image</span>
-                  </div>
+                  <img src={media.url} alt={media.originalName} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 )}
               </div>
               <div className="p-3.5">

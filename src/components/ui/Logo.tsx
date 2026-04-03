@@ -14,12 +14,11 @@ export default function Logo({ variant = 'dark', size = 'md', className = '' }: 
   };
 
   const color = variant === 'dark' ? 'text-[#09090b]' : 'text-white';
-  const dotColor = variant === 'dark' ? 'text-[#c8a97e]' : 'text-[#c8a97e]';
 
   return (
     <span className={`${sizeClasses[size]} tracking-tight select-none ${color} ${className}`}>
       <span className="font-bold">Flex</span>
-      <span className={dotColor}>.</span>
+      <span className="text-[#c8a97e]">.</span>
       <span className="font-light">industry</span>
     </span>
   );

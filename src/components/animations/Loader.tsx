@@ -1,6 +1,18 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 export default function Loader() {
+  const [hidden, setHidden] = useState(false);
+
+  // Safety timeout: remove loader after 3s no matter what
+  useEffect(() => {
+    const timer = setTimeout(() => setHidden(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (hidden) return null;
+
   return (
     <>
       <style>{`
@@ -49,7 +61,9 @@ export default function Loader() {
           content: "0";
         }
       `}</style>
-      <div className="loader-overlay">
+      <div className="loader-overlay" onAnimationEnd={(e) => {
+        if (e.animationName === 'loaderFadeOut') setHidden(true);
+      }}>
         <div className="loader-logo" style={{ marginBottom: 40 }}>
           <span style={{ fontSize: '1.5rem', letterSpacing: '-0.02em', color: 'white' }}>
             <span style={{ fontWeight: 600 }}>Flex</span>

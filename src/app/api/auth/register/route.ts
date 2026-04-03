@@ -15,13 +15,17 @@ export async function POST(req: NextRequest) {
     if (password.length < 8) {
       return Response.json({ message: 'Mot de passe: 8 caractères minimum' }, { status: 400 });
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return Response.json({ message: 'Adresse email invalide' }, { status: 400 });
+    }
     const existing = await User.findOne({ email });
     if (existing) {
       return Response.json({ message: 'Cet email est déjà utilisé' }, { status: 400 });
     }
     const user = await User.create({ firstName, lastName, email, password });
     const token = generateToken(String(user._id), user.role);
-    return Response.json({ user, token }, { status: 201 });
+    const safeUser = user.toJSON(); // toJSON strips password
+    return Response.json({ user: safeUser, token }, { status: 201 });
   } catch {
     return Response.json({ message: 'Erreur serveur' }, { status: 500 });
   }

@@ -29,20 +29,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('flex-token');
-    if (storedToken) {
-      setToken(storedToken);
-      authAPI
-        .me(storedToken)
-        .then((data: unknown) => {
-          setUser((data as { user: User }).user);
-        })
-        .catch(() => {
-          localStorage.removeItem('flex-token');
-          setToken(null);
-        })
-        .finally(() => setLoading(false));
-    } else {
+    try {
+      const storedToken = localStorage.getItem('flex-token');
+      if (storedToken) {
+        setToken(storedToken);
+        authAPI
+          .me(storedToken)
+          .then((data: unknown) => {
+            const res = data as { user: User };
+            if (res?.user) setUser(res.user);
+          })
+          .catch(() => {
+            try { localStorage.removeItem('flex-token'); } catch {}
+            setToken(null);
+          })
+          .finally(() => setLoading(false));
+      } else {
+        setLoading(false);
+      }
+    } catch {
+      // localStorage not available (private browsing, etc.)
       setLoading(false);
     }
   }, []);
@@ -51,20 +57,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const data = (await authAPI.login({ email, password })) as { user: User; token: string };
     setUser(data.user);
     setToken(data.token);
-    localStorage.setItem('flex-token', data.token);
+    try { localStorage.setItem('flex-token', data.token); } catch {}
   };
 
   const register = async (formData: { firstName: string; lastName: string; email: string; password: string }) => {
     const data = (await authAPI.register(formData)) as { user: User; token: string };
     setUser(data.user);
     setToken(data.token);
-    localStorage.setItem('flex-token', data.token);
+    try { localStorage.setItem('flex-token', data.token); } catch {}
   };
 
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('flex-token');
+    try { localStorage.removeItem('flex-token'); } catch {}
   };
 
   return (

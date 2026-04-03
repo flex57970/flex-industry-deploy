@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 
 interface ScrollRevealProps {
@@ -12,8 +12,32 @@ interface ScrollRevealProps {
 }
 
 export default function ScrollReveal({ children, className = '', delay = 0, direction = 'up' }: ScrollRevealProps) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-50px' });
+  const ref = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    // Fallback: if IntersectionObserver is not supported, show content immediately
+    if (typeof IntersectionObserver === 'undefined') {
+      setIsInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.unobserve(el);
+        }
+      },
+      { rootMargin: '-50px' }
+    );
+
+    observer.observe(el);
+    return () => observer.unobserve(el);
+  }, []);
 
   const y = direction === 'up' ? 30 : direction === 'down' ? -30 : 0;
   const x = direction === 'left' ? 30 : direction === 'right' ? -30 : 0;

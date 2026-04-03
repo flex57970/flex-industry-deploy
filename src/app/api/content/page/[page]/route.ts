@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server';
 import connectDB from '@/lib/db';
-import { autoSeed } from '@/lib/seed';
 import Content from '@/lib/models/Content';
 
 const allowedPages = ['home', 'immobilier', 'automobile', 'parfumerie'];
@@ -8,7 +7,6 @@ const allowedPages = ['home', 'immobilier', 'automobile', 'parfumerie'];
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ page: string }> }) {
   try {
     await connectDB();
-    await autoSeed();
     const { page } = await params;
     if (!allowedPages.includes(page)) {
       return Response.json({ message: 'Page invalide' }, { status: 400 });

@@ -109,7 +109,7 @@ export default function Navbar() {
                           >
                             <div>
                               <div className="text-[13px] font-medium">{cat.name}</div>
-                              <div className={`text-[11px] mt-0.5 ${pathname === cat.href ? 'text-gray-400' : 'text-gray-400'}`}>
+                              <div className="text-[11px] mt-0.5 text-gray-400">
                                 {cat.desc}
                               </div>
                             </div>

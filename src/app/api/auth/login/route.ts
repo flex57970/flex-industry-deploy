@@ -17,7 +17,8 @@ export async function POST(req: NextRequest) {
       return Response.json({ message: 'Email ou mot de passe incorrect' }, { status: 401 });
     }
     const token = generateToken(String(user._id), user.role);
-    return Response.json({ user, token });
+    const safeUser = user.toJSON(); // toJSON strips password
+    return Response.json({ user: safeUser, token });
   } catch {
     return Response.json({ message: 'Erreur serveur' }, { status: 500 });
   }

@@ -1,13 +1,15 @@
 import { NextRequest } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+import crypto from 'crypto';
 import connectDB from '@/lib/db';
 import Media from '@/lib/models/Media';
+import { saveFile } from '@/lib/uploads';
 import { requireAdmin } from '@/lib/auth-utils';
 
 const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/quicktime', 'video/webm'];
 const allowedExts = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.mp4', '.mov', '.webm'];
 const allowedCategories = ['general', 'immobilier', 'automobile', 'parfumerie'];
+const MAX_SIZE = 100 * 1024 * 1024; // 100MB
 
 export async function POST(req: NextRequest) {
   const auth = await requireAdmin(req);
@@ -22,15 +24,16 @@ export async function POST(req: NextRequest) {
     if (!allowedMimes.includes(file.type) || !allowedExts.includes(ext)) {
       return Response.json({ message: 'Format de fichier non supporté' }, { status: 400 });
     }
-    if (file.size > 100 * 1024 * 1024) {
+    if (file.size > MAX_SIZE) {
       return Response.json({ message: 'Fichier trop volumineux (max 100MB)' }, { status: 400 });
     }
 
-    const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
-    const uploadDir = path.join(process.cwd(), 'uploads');
-    await mkdir(uploadDir, { recursive: true });
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(path.join(uploadDir, filename), buffer);
+    const randHex = crypto.randomBytes(8).toString('hex');
+    const filename = `${Date.now()}-${randHex}${ext}`;
+
+    // Save to filesystem
+    await saveFile(filename, buffer);
 
     await connectDB();
     const cat = formData.get('category') as string;
@@ -41,12 +44,12 @@ export async function POST(req: NextRequest) {
       originalName: file.name,
       mimeType: file.type,
       size: file.size,
-      url: `/uploads/${filename}`,
+      url: `/api/media/file/${filename}`,
       category,
       uploadedBy: auth.user._id,
     });
 
-    return Response.json(media, { status: 201 });
+    return Response.json(media.toJSON(), { status: 201 });
   } catch {
     return Response.json({ message: "Erreur lors de l'upload" }, { status: 500 });
   }

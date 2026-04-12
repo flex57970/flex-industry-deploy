@@ -1,0 +1,33 @@
+import { NextRequest } from 'next/server';
+import PortfolioCategory from '@/lib/models/PortfolioCategory';
+import { requireAdmin } from '@/lib/auth-utils';
+
+export async function GET(req: NextRequest) {
+  const auth = await requireAdmin(req);
+  if (auth instanceof Response) return auth;
+  try {
+    const categories = await PortfolioCategory.find().sort({ order: 1 });
+    return Response.json(categories);
+  } catch {
+    return Response.json({ message: 'Erreur serveur' }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest) {
+  const auth = await requireAdmin(req);
+  if (auth instanceof Response) return auth;
+  try {
+    const { name, slug, description, coverUrl, order, isActive } = await req.json();
+    if (!name || !slug) {
+      return Response.json({ message: 'Nom et slug requis' }, { status: 400 });
+    }
+    const existing = await PortfolioCategory.findOne({ slug });
+    if (existing) {
+      return Response.json({ message: 'Ce slug existe déjà' }, { status: 409 });
+    }
+    const category = await PortfolioCategory.create({ name, slug, description, coverUrl, order, isActive });
+    return Response.json(category, { status: 201 });
+  } catch {
+    return Response.json({ message: 'Erreur serveur' }, { status: 500 });
+  }
+}

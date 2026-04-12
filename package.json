@@ -4,16 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "build": "next build && node scripts/copy-static.js",
+    "start": "node server.js",
     "lint": "eslint"
   },
   "dependencies": {
-    "@gsap/react": "^2.1.2",
     "@tailwindcss/postcss": "^4",
     "bcryptjs": "^2.4.3",
     "framer-motion": "^12.38.0",
-    "gsap": "^3.14.2",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.7.0",
     "mongoose": "^9.3.3",

@@ -21,7 +21,7 @@ const footerLinks = {
   ],
   agence: [
     { name: 'À propos', href: '/#about' },
-    { name: 'Notre approche', href: '/#expertises' },
+    { name: 'Portfolio', href: '/portfolio' },
     { name: 'Contact', href: '/contact' },
   ],
 };

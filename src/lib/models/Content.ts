@@ -15,7 +15,7 @@ export interface IContent extends Document {
 const contentSchema = new Schema<IContent>(
   {
     section: { type: String, required: true },
-    page: { type: String, required: true, enum: ['home', 'immobilier', 'automobile', 'parfumerie'] },
+    page: { type: String, required: true },
     title: { type: String, default: '' },
     subtitle: { type: String, default: '' },
     description: { type: String, default: '' },

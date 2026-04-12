@@ -1,20 +1,29 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function Loader() {
   const [hidden, setHidden] = useState(false);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
-  // Safety timeout: remove loader after 3s no matter what
   useEffect(() => {
+    // Safety timeout: remove loader after 3s no matter what
     const timer = setTimeout(() => setHidden(true), 3000);
     return () => clearTimeout(timer);
   }, []);
+
+  // When hidden changes, ensure the DOM element is truly gone
+  useEffect(() => {
+    if (hidden && overlayRef.current) {
+      overlayRef.current.classList.add('loader-hidden');
+    }
+  }, [hidden]);
 
   if (hidden) return null;
 
   return (
     <div
+      ref={overlayRef}
       className="loader-overlay"
       onAnimationEnd={(e) => {
         if (e.animationName === 'loaderFadeOut') setHidden(true);

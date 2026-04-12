@@ -29,6 +29,13 @@ const categories = [
     href: '/parfumerie',
     index: '03',
   },
+  {
+    title: 'Portfolio',
+    subtitle: 'Nos réalisations',
+    description: 'Découvrez l\'ensemble de nos projets et réalisations à travers nos catégories.',
+    href: '/portfolio',
+    index: '04',
+  },
 ];
 
 const stats = [

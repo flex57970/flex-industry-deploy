@@ -1,8 +1,6 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ReactNode } from 'react';
+import { useRef, useState, useEffect, ReactNode } from 'react';
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -19,7 +17,6 @@ export default function ScrollReveal({ children, className = '', delay = 0, dire
     const el = ref.current;
     if (!el) return;
 
-    // Fallback: if IntersectionObserver is not supported, show content immediately
     if (typeof IntersectionObserver === 'undefined') {
       setIsInView(true);
       return;
@@ -39,23 +36,24 @@ export default function ScrollReveal({ children, className = '', delay = 0, dire
     return () => observer.unobserve(el);
   }, []);
 
-  const y = direction === 'up' ? 30 : direction === 'down' ? -30 : 0;
-  const x = direction === 'left' ? 30 : direction === 'right' ? -30 : 0;
+  const translateMap = {
+    up: 'translateY(30px)',
+    down: 'translateY(-30px)',
+    left: 'translateX(30px)',
+    right: 'translateX(-30px)',
+  };
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      initial={{ opacity: 0, x, y }}
-      animate={isInView ? { opacity: 1, x: 0, y: 0 } : {}}
-      transition={{
-        duration: 0.6,
-        delay,
-        ease: [0.25, 0.1, 0.25, 1],
-      }}
       className={className}
-      style={{ willChange: 'opacity, transform' }}
+      style={{
+        opacity: isInView ? 1 : 0,
+        transform: isInView ? 'translate(0)' : translateMap[direction],
+        transition: `opacity 0.6s ease ${delay}s, transform 0.6s ease ${delay}s`,
+      }}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

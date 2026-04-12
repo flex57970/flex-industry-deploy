@@ -18,6 +18,9 @@
 /.next-build/
 /out/
 
+# Generated static files (created by scripts/copy-static.js during build)
+/public/_next/
+
 # production
 /build
 

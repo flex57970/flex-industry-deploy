@@ -14,11 +14,13 @@ import {
   Menu,
   X,
   ChevronRight,
+  FolderOpen,
 } from 'lucide-react';
 
 const sidebarLinks = [
   { name: 'Vue d\'ensemble', href: '/admin', icon: LayoutDashboard },
   { name: 'Contenus', href: '/admin/contenus', icon: FileText },
+  { name: 'Portfolio', href: '/admin/portfolio', icon: FolderOpen },
   { name: 'Médias', href: '/admin/medias', icon: ImageIcon },
   { name: 'Utilisateurs', href: '/admin/utilisateurs', icon: Users },
 ];
@@ -54,7 +56,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!user || !isAdmin) return null;
 
-  const currentPage = sidebarLinks.find((l) => l.href === pathname)?.name || 'Dashboard';
+  const currentPage = sidebarLinks.find((l) => pathname === l.href || (l.href !== '/admin' && pathname.startsWith(l.href)))?.name || 'Dashboard';
 
   return (
     <div className="min-h-screen bg-[var(--color-warm)]">
@@ -90,7 +92,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <p className="px-3 text-[10px] tracking-[0.15em] uppercase text-gray-300 mb-3 font-semibold">Menu</p>
           <ul className="space-y-0.5">
             {sidebarLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = pathname === link.href || (link.href !== '/admin' && pathname.startsWith(link.href));
               const Icon = link.icon;
               return (
                 <li key={link.href}>
@@ -131,7 +133,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="mt-2 p-3 rounded-xl bg-[var(--color-warm)] flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-gray-900 flex items-center justify-center shrink-0">
               <span className="text-white text-xs font-semibold">
-                {user.firstName[0]}{user.lastName[0]}
+                {(user.firstName || '')[0]}{(user.lastName || '')[0]}
               </span>
             </div>
             <div className="min-w-0 flex-1">

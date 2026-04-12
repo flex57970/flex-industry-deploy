@@ -127,7 +127,7 @@ export default function AdminUsers() {
                     <div className="col-span-4 flex items-center gap-3 min-w-0">
                       <div className="w-9 h-9 rounded-xl bg-[var(--color-warm)] flex items-center justify-center shrink-0">
                         <span className="text-[11px] font-semibold text-gray-600">
-                          {user.firstName[0]}{user.lastName[0]}
+                          {(user.firstName || '')[0]}{(user.lastName || '')[0]}
                         </span>
                       </div>
                       <div className="min-w-0">
@@ -174,7 +174,7 @@ export default function AdminUsers() {
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div className="w-9 h-9 rounded-xl bg-[var(--color-warm)] flex items-center justify-center shrink-0">
                         <span className="text-[11px] font-semibold text-gray-600">
-                          {user.firstName[0]}{user.lastName[0]}
+                          {(user.firstName || '')[0]}{(user.lastName || '')[0]}
                         </span>
                       </div>
                       <div className="min-w-0">

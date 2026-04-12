@@ -133,6 +133,39 @@ export const contactAPI = {
     fetchAPI('/contact', { method: 'POST', body: JSON.stringify(data) }),
 };
 
+// Portfolio
+export const portfolioAPI = {
+  // Public
+  getPublic: () => fetchAPI('/portfolio/public'),
+
+  // Categories (admin)
+  getCategories: (token: string) => fetchAPI('/portfolio/categories', { token }),
+  createCategory: (data: Record<string, unknown>, token: string) =>
+    fetchAPI('/portfolio/categories', { method: 'POST', body: JSON.stringify(data), token }),
+  updateCategory: (id: string, data: Record<string, unknown>, token: string) =>
+    fetchAPI(`/portfolio/categories/${id}`, { method: 'PUT', body: JSON.stringify(data), token }),
+  deleteCategory: (id: string, token: string) =>
+    fetchAPI(`/portfolio/categories/${id}`, { method: 'DELETE', token }),
+
+  // Grids (admin)
+  getGrids: (categoryId: string, token: string) =>
+    fetchAPI(`/portfolio/grids?categoryId=${categoryId}`, { token }),
+  createGrid: (data: Record<string, unknown>, token: string) =>
+    fetchAPI('/portfolio/grids', { method: 'POST', body: JSON.stringify(data), token }),
+  updateGrid: (id: string, data: Record<string, unknown>, token: string) =>
+    fetchAPI(`/portfolio/grids/${id}`, { method: 'PUT', body: JSON.stringify(data), token }),
+  deleteGrid: (id: string, token: string) =>
+    fetchAPI(`/portfolio/grids/${id}`, { method: 'DELETE', token }),
+
+  // Grid items (admin)
+  addItem: (gridId: string, data: Record<string, unknown>, token: string) =>
+    fetchAPI(`/portfolio/grids/${gridId}/items`, { method: 'POST', body: JSON.stringify(data), token }),
+  updateItems: (gridId: string, items: unknown[], token: string) =>
+    fetchAPI(`/portfolio/grids/${gridId}/items`, { method: 'PUT', body: JSON.stringify({ items }), token }),
+  deleteItem: (gridId: string, itemId: string, token: string) =>
+    fetchAPI(`/portfolio/grids/${gridId}/items`, { method: 'DELETE', body: JSON.stringify({ itemId }), token }),
+};
+
 // Users
 export const usersAPI = {
   getAll: (token: string) => fetchAPI('/users', { token }),

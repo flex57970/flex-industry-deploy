@@ -11,7 +11,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const { id } = await params;
     if (!mongoose.Types.ObjectId.isValid(id)) return Response.json({ message: 'ID invalide' }, { status: 400 });
     const { mediaUrl, mediaType, caption } = await req.json();
-    if (!mediaUrl) return Response.json({ message: 'mediaUrl requis' }, { status: 400 });
+    if (!mediaUrl || typeof mediaUrl !== 'string' || mediaUrl.length > 2000) {
+      return Response.json({ message: 'mediaUrl invalide' }, { status: 400 });
+    }
+    if (mediaType && !['image', 'video'].includes(mediaType)) {
+      return Response.json({ message: 'mediaType doit être image ou video' }, { status: 400 });
+    }
+    if (caption && (typeof caption !== 'string' || caption.length > 500)) {
+      return Response.json({ message: 'Caption trop long (max 500 caractères)' }, { status: 400 });
+    }
 
     const grid = await PortfolioGrid.findById(id);
     if (!grid) return Response.json({ message: 'Grille introuvable' }, { status: 404 });
@@ -34,6 +42,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const { id } = await params;
     if (!mongoose.Types.ObjectId.isValid(id)) return Response.json({ message: 'ID invalide' }, { status: 400 });
     const { items } = await req.json();
+    if (!Array.isArray(items) || items.length > 500) {
+      return Response.json({ message: 'Items invalides' }, { status: 400 });
+    }
 
     const grid = await PortfolioGrid.findByIdAndUpdate(
       id,

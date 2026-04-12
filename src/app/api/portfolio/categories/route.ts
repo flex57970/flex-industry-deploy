@@ -18,8 +18,14 @@ export async function POST(req: NextRequest) {
   if (auth instanceof Response) return auth;
   try {
     const { name, slug, description, coverUrl, order, isActive } = await req.json();
-    if (!name || !slug) {
-      return Response.json({ message: 'Nom et slug requis' }, { status: 400 });
+    if (!name || typeof name !== 'string' || name.length > 200) {
+      return Response.json({ message: 'Nom invalide (max 200 caractères)' }, { status: 400 });
+    }
+    if (!slug || typeof slug !== 'string' || slug.length > 200 || !/^[a-z0-9-]+$/.test(slug)) {
+      return Response.json({ message: 'Slug invalide (lettres minuscules, chiffres et tirets)' }, { status: 400 });
+    }
+    if (description && (typeof description !== 'string' || description.length > 1000)) {
+      return Response.json({ message: 'Description trop longue (max 1000 caractères)' }, { status: 400 });
     }
     const existing = await PortfolioCategory.findOne({ slug });
     if (existing) {

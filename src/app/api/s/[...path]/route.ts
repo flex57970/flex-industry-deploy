@@ -25,17 +25,29 @@ export async function GET(
   const { path: pathSegments } = await params;
   const relativePath = pathSegments.join('/');
 
-  // Security: prevent path traversal
-  if (relativePath.includes('..') || relativePath.includes('//')) {
+  // Security: reject path traversal attempts
+  if (relativePath.includes('..') || relativePath.includes('//') || relativePath.includes('\\')) {
     return new NextResponse('Forbidden', { status: 403 });
   }
 
-  const filePath = path.join(process.cwd(), '.next', 'static', relativePath);
+  const baseDir = path.resolve(process.cwd(), '.next', 'static');
+  const filePath = path.resolve(baseDir, relativePath);
+
+  // Verify resolved path stays within .next/static/
+  if (!filePath.startsWith(baseDir + path.sep)) {
+    return new NextResponse('Forbidden', { status: 403 });
+  }
 
   try {
     const stat = fs.statSync(filePath);
     if (!stat.isFile()) {
       return new NextResponse('Not Found', { status: 404 });
+    }
+
+    // Reject symlinks that could escape the directory
+    const realPath = fs.realpathSync(filePath);
+    if (!realPath.startsWith(baseDir)) {
+      return new NextResponse('Forbidden', { status: 403 });
     }
 
     const ext = path.extname(filePath).toLowerCase();
@@ -48,7 +60,6 @@ export async function GET(
         'Content-Type': contentType,
         'Content-Length': String(stat.size),
         'Cache-Control': 'public, max-age=31536000, immutable',
-        'X-Served-By': 'api-static-fallback',
       },
     });
   } catch {

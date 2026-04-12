@@ -100,6 +100,19 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ file
       return new Response('Not Found', { status: 404 });
     }
 
+    // Verify resolved path doesn't escape allowed directories via symlinks
+    const realPath = await fs.realpath(filePath);
+    const allowedDirs = [
+      process.env.UPLOAD_DIR,
+      path.join(process.cwd(), 'media-uploads'),
+      path.join(process.env.HOME || '/home', 'media-uploads'),
+      path.join('/tmp', 'media-uploads'),
+    ].filter(Boolean) as string[];
+    const isAllowed = allowedDirs.some((dir) => realPath.startsWith(path.resolve(dir)));
+    if (!isAllowed) {
+      return new Response('Forbidden', { status: 403 });
+    }
+
     const stat = await fs.stat(filePath);
     const contentType = getContentType(filename);
     const fileSize = stat.size;

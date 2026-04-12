@@ -18,8 +18,6 @@ const destinations = [
   path.join(projectRoot, '..', 'public_html', '_next', 'static'),
   // Hostinger alternative: some setups use different nesting
   path.join(projectRoot, '..', '..', 'public_html', '_next', 'static'),
-  // Fallback: copy to public/_next/static within the project
-  path.join(projectRoot, 'public', '_next', 'static'),
 ];
 
 function copyRecursive(src, dest) {

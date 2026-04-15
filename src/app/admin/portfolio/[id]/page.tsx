@@ -12,13 +12,23 @@ interface Category {
   slug: string;
 }
 
+type AspectRatio = '9:16' | '16:9' | '1:1' | '4:5';
+
 interface GridItem {
   _id: string;
   mediaUrl: string;
   mediaType: 'image' | 'video';
+  aspectRatio: AspectRatio;
   caption: string;
   order: number;
 }
+
+const ASPECT_OPTIONS: { value: AspectRatio; label: string; cssClass: string }[] = [
+  { value: '9:16', label: '9:16', cssClass: 'aspect-[9/16]' },
+  { value: '16:9', label: '16:9', cssClass: 'aspect-video' },
+  { value: '1:1', label: '1:1', cssClass: 'aspect-square' },
+  { value: '4:5', label: '4:5', cssClass: 'aspect-[4/5]' },
+];
 
 interface Grid {
   _id: string;
@@ -59,6 +69,7 @@ export default function AdminPortfolioGrids() {
   const [mediaLibrary, setMediaLibrary] = useState<MediaItem[]>([]);
   const [loadingMedia, setLoadingMedia] = useState(false);
   const [addingItem, setAddingItem] = useState(false);
+  const [selectedAspect, setSelectedAspect] = useState<AspectRatio>('9:16');
 
   // Direct upload
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -156,7 +167,7 @@ export default function AdminPortfolioGrids() {
       const isVideo = media.mimeType.startsWith('video/');
       await portfolioAPI.addItem(
         selectedGrid,
-        { mediaUrl: media.url, mediaType: isVideo ? 'video' : 'image', caption: '' },
+        { mediaUrl: media.url, mediaType: isVideo ? 'video' : 'image', aspectRatio: selectedAspect, caption: '' },
         token
       );
       await fetchGrids();
@@ -177,7 +188,7 @@ export default function AdminPortfolioGrids() {
       const isVideo = media.mimeType.startsWith('video/');
       await portfolioAPI.addItem(
         selectedGrid,
-        { mediaUrl: media.url, mediaType: isVideo ? 'video' : 'image', caption: '' },
+        { mediaUrl: media.url, mediaType: isVideo ? 'video' : 'image', aspectRatio: selectedAspect, caption: '' },
         token
       );
       await fetchGrids();
@@ -187,6 +198,17 @@ export default function AdminPortfolioGrids() {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
+  };
+
+  const handleChangeAspect = async (itemId: string, newAspect: AspectRatio) => {
+    if (!token || !selectedGrid || !currentGrid) return;
+    try {
+      const updatedItems = currentGrid.items.map((item) =>
+        item._id === itemId ? { ...item, aspectRatio: newAspect } : item
+      );
+      await portfolioAPI.updateItems(selectedGrid, updatedItems, token);
+      await fetchGrids();
+    } catch {}
   };
 
   const handleDeleteItem = async (itemId: string) => {
@@ -294,44 +316,88 @@ export default function AdminPortfolioGrids() {
           </p>
         </div>
       ) : (
+        <>
+        <div className="flex items-center gap-3 mb-5">
+          <span className="text-[11px] tracking-[0.12em] uppercase text-gray-400 font-semibold">Format :</span>
+          <div className="flex gap-1.5">
+            {ASPECT_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setSelectedAspect(opt.value)}
+                className={`text-[12px] px-3 py-1.5 rounded-lg font-medium transition-all ${
+                  selectedAspect === opt.value
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white text-gray-400 border border-gray-200 hover:bg-gray-50 hover:text-gray-600'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {currentGrid.items
             .sort((a, b) => a.order - b.order)
-            .map((item) => (
-              <div
-                key={item._id}
-                className="relative aspect-square rounded-xl overflow-hidden bg-[var(--color-warm)] group"
-              >
-                {item.mediaType === 'video' ? (
-                  <video
-                    src={item.mediaUrl}
-                    className="w-full h-full object-cover"
-                    muted
-                    playsInline
-                    onMouseOver={(e) => (e.target as HTMLVideoElement).play()}
-                    onMouseOut={(e) => { const v = e.target as HTMLVideoElement; v.pause(); v.currentTime = 0; }}
-                  />
-                ) : (
-                  <img src={item.mediaUrl} alt={item.caption || ''} className="w-full h-full object-cover" />
-                )}
+            .map((item) => {
+              const aspect = ASPECT_OPTIONS.find((o) => o.value === (item.aspectRatio || '9:16'));
+              return (
+                <div
+                  key={item._id}
+                  className={`relative ${aspect?.cssClass || 'aspect-[9/16]'} rounded-xl overflow-hidden bg-[var(--color-warm)] group`}
+                >
+                  {item.mediaType === 'video' ? (
+                    <video
+                      src={item.mediaUrl}
+                      className="w-full h-full object-cover"
+                      muted
+                      playsInline
+                      onMouseOver={(e) => (e.target as HTMLVideoElement).play()}
+                      onMouseOut={(e) => { const v = e.target as HTMLVideoElement; v.pause(); v.currentTime = 0; }}
+                    />
+                  ) : (
+                    <img src={item.mediaUrl} alt={item.caption || ''} className="w-full h-full object-cover" />
+                  )}
 
-                {/* Type badge */}
-                <div className="absolute top-2 right-2 bg-black/40 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
-                  {item.mediaType === 'video' ? <Film className="w-3 h-3 text-white" /> : <ImageIcon className="w-3 h-3 text-white" />}
-                </div>
+                  {/* Badges: type + aspect */}
+                  <div className="absolute top-2 right-2 flex items-center gap-1">
+                    <div className="bg-black/40 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
+                      {item.mediaType === 'video' ? <Film className="w-3 h-3 text-white" /> : <ImageIcon className="w-3 h-3 text-white" />}
+                    </div>
+                    <div className="bg-black/40 backdrop-blur-sm rounded-lg px-2 py-1">
+                      <span className="text-[10px] text-white font-medium">{item.aspectRatio || '9:16'}</span>
+                    </div>
+                  </div>
 
-                {/* Delete overlay */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                  <button
-                    onClick={() => handleDeleteItem(item._id)}
-                    className="bg-red-500 text-white text-[11px] px-3.5 py-2 rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center gap-1.5"
-                  >
-                    <X className="w-3 h-3" />
-                    Retirer
-                  </button>
+                  {/* Hover overlay with actions */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                    {/* Aspect ratio quick switch */}
+                    <div className="flex gap-1">
+                      {ASPECT_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.value}
+                          onClick={() => handleChangeAspect(item._id, opt.value)}
+                          className={`text-[10px] px-2 py-1 rounded font-medium transition-colors ${
+                            (item.aspectRatio || '9:16') === opt.value
+                              ? 'bg-white text-gray-900'
+                              : 'bg-white/20 text-white hover:bg-white/40'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => handleDeleteItem(item._id)}
+                      className="bg-red-500 text-white text-[11px] px-3.5 py-2 rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center gap-1.5"
+                    >
+                      <X className="w-3 h-3" />
+                      Retirer
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
           {/* Add item buttons */}
           <div className="aspect-square rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-3 hover:border-gray-300 transition-all">
@@ -364,6 +430,7 @@ export default function AdminPortfolioGrids() {
             )}
           </div>
         </div>
+        </>
       )}
 
       {/* Grid Create/Edit Modal */}

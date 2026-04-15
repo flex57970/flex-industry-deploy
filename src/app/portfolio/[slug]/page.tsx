@@ -8,10 +8,18 @@ import ScrollReveal from '@/components/animations/ScrollReveal';
 import MediaSlot from '@/components/ui/MediaSlot';
 import { portfolioAPI } from '@/lib/api';
 
+const ASPECT_CSS: Record<string, string> = {
+  '9:16': 'aspect-[9/16]',
+  '16:9': 'aspect-video',
+  '1:1': 'aspect-square',
+  '4:5': 'aspect-[4/5]',
+};
+
 interface GridItem {
   _id: string;
   mediaUrl: string;
   mediaType: 'image' | 'video';
+  aspectRatio?: string;
   caption: string;
   order: number;
 }
@@ -147,23 +155,28 @@ export default function PortfolioCategoryPage() {
       <section className="py-[var(--section-py)] bg-white">
         <div className="max-w-[1200px] mx-auto container-px">
           {currentGrid && currentGrid.items.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="columns-1 md:columns-2 lg:columns-3 gap-5 space-y-5">
               {currentGrid.items
                 .sort((a, b) => a.order - b.order)
-                .map((item, i) => (
-                  <ScrollReveal key={item._id} delay={i * 0.04}>
-                    <MediaSlot
-                      url={item.mediaUrl}
-                      type={item.mediaType}
-                      placeholder="Média"
-                      className="aspect-[9/16] rounded-2xl"
-                      alt={item.caption}
-                    />
-                    {item.caption && (
-                      <p className="text-[12px] text-gray-400 mt-2 text-center">{item.caption}</p>
-                    )}
-                  </ScrollReveal>
-                ))}
+                .map((item, i) => {
+                  const aspectClass = ASPECT_CSS[item.aspectRatio || '9:16'] || 'aspect-[9/16]';
+                  return (
+                    <ScrollReveal key={item._id} delay={i * 0.04}>
+                      <div className="break-inside-avoid">
+                        <MediaSlot
+                          url={item.mediaUrl}
+                          type={item.mediaType}
+                          placeholder="Média"
+                          className={`${aspectClass} rounded-2xl`}
+                          alt={item.caption}
+                        />
+                        {item.caption && (
+                          <p className="text-[12px] text-gray-400 mt-2 text-center">{item.caption}</p>
+                        )}
+                      </div>
+                    </ScrollReveal>
+                  );
+                })}
             </div>
           ) : (
             <div className="text-center py-20">

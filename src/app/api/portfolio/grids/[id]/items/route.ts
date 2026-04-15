@@ -10,12 +10,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   try {
     const { id } = await params;
     if (!mongoose.Types.ObjectId.isValid(id)) return Response.json({ message: 'ID invalide' }, { status: 400 });
-    const { mediaUrl, mediaType, caption } = await req.json();
+    const { mediaUrl, mediaType, aspectRatio, caption } = await req.json();
     if (!mediaUrl || typeof mediaUrl !== 'string' || mediaUrl.length > 2000) {
       return Response.json({ message: 'mediaUrl invalide' }, { status: 400 });
     }
     if (mediaType && !['image', 'video'].includes(mediaType)) {
       return Response.json({ message: 'mediaType doit être image ou video' }, { status: 400 });
+    }
+    if (aspectRatio && !['9:16', '16:9', '1:1', '4:5'].includes(aspectRatio)) {
+      return Response.json({ message: 'aspectRatio doit être 9:16, 16:9, 1:1 ou 4:5' }, { status: 400 });
     }
     if (caption && (typeof caption !== 'string' || caption.length > 500)) {
       return Response.json({ message: 'Caption trop long (max 500 caractères)' }, { status: 400 });
@@ -25,7 +28,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     if (!grid) return Response.json({ message: 'Grille introuvable' }, { status: 404 });
 
     const order = grid.items.length;
-    grid.items.push({ mediaUrl, mediaType: mediaType || 'image', caption: caption || '', order });
+    grid.items.push({ mediaUrl, mediaType: mediaType || 'image', aspectRatio: aspectRatio || '9:16', caption: caption || '', order });
     await grid.save();
 
     return Response.json(grid, { status: 201 });

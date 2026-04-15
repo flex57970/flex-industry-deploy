@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IPortfolioGridItem {
   mediaUrl: string;
   mediaType: 'image' | 'video';
+  aspectRatio: '9:16' | '16:9' | '1:1' | '4:5';
   caption: string;
   order: number;
 }
@@ -20,6 +21,7 @@ const portfolioGridItemSchema = new Schema<IPortfolioGridItem>(
   {
     mediaUrl: { type: String, required: true },
     mediaType: { type: String, enum: ['image', 'video'], default: 'image' },
+    aspectRatio: { type: String, enum: ['9:16', '16:9', '1:1', '4:5'], default: '9:16' },
     caption: { type: String, default: '' },
     order: { type: Number, default: 0 },
   },

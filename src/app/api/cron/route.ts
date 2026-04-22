@@ -8,6 +8,9 @@ import { checkFailedLogins } from '@/lib/agents/security-agent';
 
 export const maxDuration = 120;
 
+// Fallback secret — used if env var CRON_SECRET is not set on Hostinger
+const FALLBACK_SECRET = '46c79fbaeae2a81cbb3bb6b02346f99d23faa9aca23c936d24e125b973b0c68b';
+
 interface TaskResult {
   key: string;
   status: 'success' | 'error' | 'skipped';
@@ -29,7 +32,8 @@ interface TaskResult {
  */
 export async function GET(req: NextRequest) {
   const secret = req.headers.get('x-cron-secret') || req.nextUrl.searchParams.get('secret');
-  if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
+  const expectedSecret = process.env.CRON_SECRET || FALLBACK_SECRET;
+  if (!secret || secret !== expectedSecret) {
     return Response.json({ message: 'Non autorisé' }, { status: 401 });
   }
 

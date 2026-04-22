@@ -102,8 +102,7 @@ export const metadata: Metadata = {
     telephone: false,
   },
   verification: {
-    // Ajouter le code de vérification Google Search Console quand disponible
-    // google: 'votre-code-verification',
+    google: 'qYvcfg26Lac8MTD58gQvcLqtQh1RL86E-vLKnst0TIw',
   },
 };
 

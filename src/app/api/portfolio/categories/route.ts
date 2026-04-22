@@ -1,6 +1,8 @@
 import { NextRequest } from 'next/server';
 import PortfolioCategory from '@/lib/models/PortfolioCategory';
 import { requireAdmin } from '@/lib/auth-utils';
+import { broadcastNewPortfolio } from '@/lib/agents/newsletter-agent';
+import { logActivity } from '@/lib/agents/security-agent';
 
 export async function GET(req: NextRequest) {
   const auth = await requireAdmin(req);
@@ -32,6 +34,24 @@ export async function POST(req: NextRequest) {
       return Response.json({ message: 'Ce slug existe déjà' }, { status: 409 });
     }
     const category = await PortfolioCategory.create({ name, slug, description, coverUrl, order, isActive });
+
+    // Log + broadcast to subscribers (fire and forget)
+    logActivity({
+      type: 'portfolio_created',
+      severity: 'info',
+      description: `Catégorie portfolio créée : ${name}`,
+      metadata: { categoryId: String(category._id), slug },
+    }).catch(() => {});
+
+    if (category.isActive) {
+      broadcastNewPortfolio({
+        name: category.name,
+        slug: category.slug,
+        description: category.description,
+        coverUrl: category.coverUrl,
+      }).catch((err) => console.error('[portfolio] broadcast failed:', err));
+    }
+
     return Response.json(category, { status: 201 });
   } catch {
     return Response.json({ message: 'Erreur serveur' }, { status: 500 });

@@ -166,6 +166,59 @@ export const portfolioAPI = {
     fetchAPI(`/portfolio/grids/${gridId}/items`, { method: 'DELETE', body: JSON.stringify({ itemId }), token }),
 };
 
+// Leads
+export const leadsAPI = {
+  getAll: (token: string, status?: string) =>
+    fetchAPI(`/leads${status ? `?status=${status}` : ''}`, { token }),
+  get: (id: string, token: string) => fetchAPI(`/leads/${id}`, { token }),
+  update: (id: string, data: Record<string, unknown>, token: string) =>
+    fetchAPI(`/leads/${id}`, { method: 'PUT', body: JSON.stringify(data), token }),
+  delete: (id: string, token: string) => fetchAPI(`/leads/${id}`, { method: 'DELETE', token }),
+};
+
+// Subscribers
+export const subscribersAPI = {
+  getAll: (token: string) => fetchAPI('/subscribers', { token }),
+  delete: (id: string, token: string) => fetchAPI(`/subscribers/${id}`, { method: 'DELETE', token }),
+};
+
+// Newsletter (public)
+export const newsletterAPI = {
+  subscribe: (email: string, name?: string) =>
+    fetchAPI('/newsletter/subscribe', { method: 'POST', body: JSON.stringify({ email, name, source: 'website' }) }),
+};
+
+// Activity log
+export const activityAPI = {
+  getAll: (token: string, opts?: { severity?: string; type?: string; limit?: number }) => {
+    const params = new URLSearchParams();
+    if (opts?.severity) params.set('severity', opts.severity);
+    if (opts?.type) params.set('type', opts.type);
+    if (opts?.limit) params.set('limit', String(opts.limit));
+    const qs = params.toString();
+    return fetchAPI(`/activity${qs ? `?${qs}` : ''}`, { token });
+  },
+};
+
+// Automations
+export const automationsAPI = {
+  getAll: (token: string) => fetchAPI('/automations', { token }),
+  toggle: (key: string, enabled: boolean, token: string) =>
+    fetchAPI('/automations', { method: 'PATCH', body: JSON.stringify({ key, enabled }), token }),
+  run: (key: string, token: string) =>
+    fetchAPI(`/automations/${key}/run`, { method: 'POST', token }),
+};
+
+// AI
+export const aiAPI = {
+  generateSeoDescription: (categoryName: string, context: string | undefined, token: string) =>
+    fetchAPI('/ai/seo-description', { method: 'POST', body: JSON.stringify({ categoryName, context }), token }),
+  draftReply: (leadId: string, token: string) =>
+    fetchAPI('/ai/draft-reply', { method: 'POST', body: JSON.stringify({ leadId }), token }),
+  getSuggestions: (token: string) =>
+    fetchAPI('/ai/suggestions', { method: 'POST', token }),
+};
+
 // Users
 export const usersAPI = {
   getAll: (token: string) => fetchAPI('/users', { token }),

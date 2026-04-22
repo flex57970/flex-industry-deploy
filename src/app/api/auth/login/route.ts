@@ -3,8 +3,13 @@ import connectDB from '@/lib/db';
 import { autoSeed } from '@/lib/seed';
 import User from '@/lib/models/User';
 import { generateToken } from '@/lib/auth-utils';
+import { logActivity } from '@/lib/agents/security-agent';
+import { getClientIp, getUserAgent } from '@/lib/request-utils';
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+  const userAgent = getUserAgent(req);
+
   try {
     await connectDB();
     await autoSeed();
@@ -12,12 +17,35 @@ export async function POST(req: NextRequest) {
     if (!email || !password) {
       return Response.json({ message: 'Email et mot de passe requis' }, { status: 400 });
     }
+
     const user = await User.findOne({ email }).select('+password');
     if (!user || !(await user.comparePassword(password))) {
+      // Log failed login (fire and forget)
+      logActivity({
+        type: 'login_failed',
+        severity: 'warning',
+        userEmail: email,
+        ip,
+        userAgent,
+        description: `Tentative de connexion échouée pour ${email}`,
+      }).catch(() => {});
+
       return Response.json({ message: 'Email ou mot de passe incorrect' }, { status: 401 });
     }
+
     const token = generateToken(String(user._id), user.role);
-    const safeUser = user.toJSON(); // toJSON strips password
+    const safeUser = user.toJSON();
+
+    logActivity({
+      type: 'login_success',
+      severity: 'info',
+      userId: String(user._id),
+      userEmail: email,
+      ip,
+      userAgent,
+      description: `Connexion réussie : ${email} (${user.role})`,
+    }).catch(() => {});
+
     return Response.json({ user: safeUser, token });
   } catch {
     return Response.json({ message: 'Erreur serveur' }, { status: 500 });

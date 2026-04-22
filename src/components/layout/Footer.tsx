@@ -1,9 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Logo from '../ui/Logo';
 import ScrollReveal from '../animations/ScrollReveal';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Check } from 'lucide-react';
+import { newsletterAPI } from '@/lib/api';
 
 const InstagramIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -27,6 +29,29 @@ const footerLinks = {
 };
 
 export default function Footer() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setStatus('error');
+      setMessage('Email invalide');
+      return;
+    }
+    setStatus('loading');
+    try {
+      const result = (await newsletterAPI.subscribe(email)) as { message: string };
+      setStatus('success');
+      setMessage(result.message);
+      setEmail('');
+    } catch (err) {
+      setStatus('error');
+      setMessage(err instanceof Error ? err.message : 'Erreur');
+    }
+  };
+
   return (
     <footer className="bg-[#0a0a0b] text-white">
       <div className="max-w-[1200px] mx-auto container-px">
@@ -52,6 +77,50 @@ export default function Footer() {
                 Démarrer un projet
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Newsletter signup */}
+        <ScrollReveal>
+          <div className="py-16 border-b border-white/[0.06]">
+            <div className="max-w-xl mx-auto text-center">
+              <p className="text-[11px] tracking-[0.15em] uppercase text-white/40 font-semibold mb-4">Newsletter</p>
+              <h3 className="text-2xl md:text-3xl font-light tracking-tight leading-[1.2] mb-4">
+                Recevez nos <span className="font-semibold">dernières réalisations</span>
+              </h3>
+              <p className="text-[13px] text-white/40 mb-8">Un email par projet. Désinscription en un clic.</p>
+              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="votre@email.com"
+                  disabled={status === 'loading' || status === 'success'}
+                  className="flex-1 px-5 py-3 rounded-full bg-white/[0.04] border border-white/10 text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-white/30 transition-colors disabled:opacity-50"
+                />
+                <button
+                  type="submit"
+                  disabled={status === 'loading' || status === 'success'}
+                  className="px-6 py-3 rounded-full bg-[var(--color-accent)] text-white text-sm font-medium hover:bg-[var(--color-accent-dark)] transition-colors disabled:opacity-40 flex items-center justify-center gap-2 min-w-[120px]"
+                >
+                  {status === 'loading' ? (
+                    <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                  ) : status === 'success' ? (
+                    <>
+                      <Check className="w-4 h-4" />
+                      Inscrit
+                    </>
+                  ) : (
+                    "S'inscrire"
+                  )}
+                </button>
+              </form>
+              {message && (
+                <p className={`text-[12px] mt-4 ${status === 'error' ? 'text-red-400' : 'text-white/60'}`}>
+                  {message}
+                </p>
+              )}
             </div>
           </div>
         </ScrollReveal>

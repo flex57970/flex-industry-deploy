@@ -15,15 +15,45 @@ import {
   X,
   ChevronRight,
   FolderOpen,
+  Inbox,
+  Mail,
+  Activity,
+  Zap,
 } from 'lucide-react';
 
-const sidebarLinks = [
-  { name: 'Vue d\'ensemble', href: '/admin', icon: LayoutDashboard },
-  { name: 'Contenus', href: '/admin/contenus', icon: FileText },
-  { name: 'Portfolio', href: '/admin/portfolio', icon: FolderOpen },
-  { name: 'Médias', href: '/admin/medias', icon: ImageIcon },
-  { name: 'Utilisateurs', href: '/admin/utilisateurs', icon: Users },
+const sidebarSections = [
+  {
+    label: 'Business',
+    links: [
+      { name: 'Vue d\'ensemble', href: '/admin', icon: LayoutDashboard },
+      { name: 'Leads', href: '/admin/leads', icon: Inbox },
+      { name: 'Abonnés', href: '/admin/abonnes', icon: Mail },
+    ],
+  },
+  {
+    label: 'Contenu',
+    links: [
+      { name: 'Contenus', href: '/admin/contenus', icon: FileText },
+      { name: 'Portfolio', href: '/admin/portfolio', icon: FolderOpen },
+      { name: 'Médias', href: '/admin/medias', icon: ImageIcon },
+    ],
+  },
+  {
+    label: 'Automatisation',
+    links: [
+      { name: 'Automations', href: '/admin/automations', icon: Zap },
+      { name: 'Activité', href: '/admin/activite', icon: Activity },
+    ],
+  },
+  {
+    label: 'Administration',
+    links: [
+      { name: 'Utilisateurs', href: '/admin/utilisateurs', icon: Users },
+    ],
+  },
 ];
+
+const sidebarLinks = sidebarSections.flatMap((s) => s.links);
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, isAdmin, logout } = useAuth();
@@ -89,28 +119,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Navigation */}
         <nav className="flex-1 py-4 px-3 overflow-y-auto">
-          <p className="px-3 text-[10px] tracking-[0.15em] uppercase text-gray-300 mb-3 font-semibold">Menu</p>
-          <ul className="space-y-0.5">
-            {sidebarLinks.map((link) => {
-              const isActive = pathname === link.href || (link.href !== '/admin' && pathname.startsWith(link.href));
-              const Icon = link.icon;
-              return (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${
-                      isActive
-                        ? 'bg-gray-900 text-white shadow-sm'
-                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                    }`}
-                  >
-                    <Icon className="w-[18px] h-[18px] shrink-0" />
-                    {link.name}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+          {sidebarSections.map((section) => (
+            <div key={section.label} className="mb-5 last:mb-0">
+              <p className="px-3 text-[10px] tracking-[0.15em] uppercase text-gray-300 mb-2 font-semibold">{section.label}</p>
+              <ul className="space-y-0.5">
+                {section.links.map((link) => {
+                  const isActive = pathname === link.href || (link.href !== '/admin' && pathname.startsWith(link.href));
+                  const Icon = link.icon;
+                  return (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${
+                          isActive
+                            ? 'bg-gray-900 text-white shadow-sm'
+                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                        }`}
+                      >
+                        <Icon className="w-[18px] h-[18px] shrink-0" />
+                        {link.name}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
         </nav>
 
         {/* User + Actions */}

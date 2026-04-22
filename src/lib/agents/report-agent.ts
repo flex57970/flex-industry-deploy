@@ -59,7 +59,7 @@ export async function sendWeeklyReport(): Promise<{ success: boolean; error?: st
     if (!resend) return { success: false, error: 'Resend non configuré' };
 
     const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
-    const adminEmail = process.env.ADMIN_EMAIL || 'flex.industris@gmail.com';
+    const adminEmail = process.env.ADMIN_EMAIL || 'contact@flex-industry.fr';
 
     await resend.emails.send({
       from: fromEmail,

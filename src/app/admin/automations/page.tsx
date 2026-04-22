@@ -211,7 +211,7 @@ export default function AdminAutomations() {
         <p className="text-[12px] text-gray-500 mb-3">Pour que toutes les automations fonctionnent, configurez ces variables d&apos;environnement sur Hostinger :</p>
         <ul className="text-[11px] text-gray-500 space-y-1 font-mono">
           <li>• <strong>CRON_SECRET</strong> : secret pour le endpoint /api/cron (obligatoire)</li>
-          <li>• <strong>ADMIN_EMAIL</strong> : flex.industris@gmail.com (destinataire des rapports)</li>
+          <li>• <strong>ADMIN_EMAIL</strong> : contact@flex-industry.fr (destinataire des rapports)</li>
           <li>• <strong>RESEND_API_KEY</strong> : pour l&apos;envoi d&apos;emails (déjà configuré)</li>
           <li>• <strong>ANTHROPIC_API_KEY</strong> : pour les fonctionnalités IA (optionnel)</li>
           <li>• <strong>NOTION_API_KEY</strong> + <strong>NOTION_LEADS_DATABASE_ID</strong> : sync Notion (optionnel)</li>

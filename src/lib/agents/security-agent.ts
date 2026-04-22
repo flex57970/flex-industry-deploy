@@ -54,7 +54,7 @@ export async function alertSecurity(data: {
   const resend = getResend();
   if (!resend) return;
   const tpl = securityAlertTemplate(data);
-  const adminEmail = process.env.ADMIN_EMAIL || 'flex.industris@gmail.com';
+  const adminEmail = process.env.ADMIN_EMAIL || 'contact@flex-industry.fr';
   await resend.emails.send({
     from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
     to: adminEmail,

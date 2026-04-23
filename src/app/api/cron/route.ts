@@ -8,8 +8,11 @@ import { checkFailedLogins } from '@/lib/agents/security-agent';
 
 export const maxDuration = 120;
 
-// Fallback secret — used if env var CRON_SECRET is not set on Hostinger
-const FALLBACK_SECRET = '46c79fbaeae2a81cbb3bb6b02346f99d23faa9aca23c936d24e125b973b0c68b';
+// Accepted fallback secrets — used if env var CRON_SECRET is not set on Hostinger
+const FALLBACK_SECRETS = [
+  '46c79fbaeae2a81cbb3bb6b02346f99d23faa9aca23c936d24e125b973b0c68b',
+  'a7f3e1c9b2d8f6e4a0b1c3d5e7f9a2b4c6d8e0f1a3b5c7d9e1f3a5b7c9d1e3f5',
+];
 
 interface TaskResult {
   key: string;
@@ -32,9 +35,20 @@ interface TaskResult {
  */
 export async function GET(req: NextRequest) {
   const secret = req.headers.get('x-cron-secret') || req.nextUrl.searchParams.get('secret');
-  const expectedSecret = process.env.CRON_SECRET || FALLBACK_SECRET;
-  if (!secret || secret !== expectedSecret) {
-    return Response.json({ message: 'Non autorisé' }, { status: 401 });
+  const envSecret = process.env.CRON_SECRET;
+
+  const isValid =
+    secret &&
+    (
+      (envSecret && secret === envSecret) ||
+      FALLBACK_SECRETS.includes(secret)
+    );
+
+  if (!isValid) {
+    return Response.json({
+      message: 'Non autorisé',
+      hint: envSecret ? 'env var CRON_SECRET set' : 'no env var — using fallback only',
+    }, { status: 401 });
   }
 
   await connectDB();

@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-typecheck-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: saas-flex-launch
+    env:
+      SKIP_ENV_VALIDATION: "1"
+      DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
+      SUPABASE_SERVICE_ROLE_KEY: placeholder
+      STRIPE_SECRET_KEY: sk_test_placeholder
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_placeholder
+      STRIPE_WEBHOOK_SECRET: whsec_placeholder
+      STRIPE_PRICE_PRO_MONTHLY: price_test_pro
+      STRIPE_PRICE_AGENCY_MONTHLY: price_test_agency
+      OPENAI_API_KEY: sk-placeholder
+      RESEND_API_KEY: re_placeholder
+      RESEND_FROM_EMAIL: "FLEX Launch <noreply@flex-launch.com>"
+      RESEND_ADMIN_EMAIL: contact@flex-industry.fr
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      ADMIN_EMAILS: contact@flex-industry.fr
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: saas-flex-launch/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint
+      - run: pnpm run typecheck
+      - run: pnpm run test
+      - run: pnpm run build

@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* FLEX theme — dark by default, noir / or / off-white */
+@layer base {
+  :root {
+    --background: 0 0% 5%;
+    --foreground: 60 20% 95%;
+
+    --card: 0 0% 7%;
+    --card-foreground: 60 20% 95%;
+
+    --popover: 0 0% 7%;
+    --popover-foreground: 60 20% 95%;
+
+    --primary: 45 65% 52%;
+    --primary-foreground: 0 0% 8%;
+
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 60 20% 95%;
+
+    --muted: 0 0% 14%;
+    --muted-foreground: 60 10% 65%;
+
+    --accent: 45 65% 52%;
+    --accent-foreground: 0 0% 8%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 60 20% 95%;
+
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 45 65% 52%;
+
+    --radius: 0.625rem;
+  }
+
+  .light {
+    --background: 60 20% 96%;
+    --foreground: 0 0% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 8%;
+    --primary: 45 65% 42%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 60 15% 92%;
+    --secondary-foreground: 0 0% 8%;
+    --muted: 60 15% 92%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 45 65% 42%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 85%;
+    --input: 0 0% 85%;
+    --ring: 45 65% 42%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  ::selection {
+    @apply bg-primary/30 text-foreground;
+  }
+}
+
+@layer utilities {
+  .flex-gradient-gold {
+    background: linear-gradient(135deg, #d4af37 0%, #f3d96b 50%, #d4af37 100%);
+  }
+  .flex-text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #d4af37 0%, #f3d96b 50%, #d4af37 100%);
+  }
+  .flex-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(212, 175, 55, 0.08) 25%,
+      rgba(212, 175, 55, 0.2) 50%,
+      rgba(212, 175, 55, 0.08) 75%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+  }
+  .flex-grid-bg {
+    background-image:
+      linear-gradient(to right, rgba(212, 175, 55, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+}

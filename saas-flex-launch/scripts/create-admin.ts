@@ -4,7 +4,9 @@
  *
  * Usage: pnpm run create:admin -- email@example.com
  */
-import "dotenv/config";
+import { config } from "dotenv";
+config({ path: ".env.local" });
+config({ path: ".env" });
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { eq } from "drizzle-orm";

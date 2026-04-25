@@ -8,7 +8,9 @@
  *
  * Idempotent: if products with matching names exist, they're reused.
  */
-import "dotenv/config";
+import { config } from "dotenv";
+config({ path: ".env.local" });
+config({ path: ".env" });
 import Stripe from "stripe";
 import { PLANS } from "../src/lib/stripe/plans";
 

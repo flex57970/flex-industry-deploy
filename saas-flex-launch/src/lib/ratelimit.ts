@@ -1,8 +1,12 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
+const upstashUrl = process.env.UPSTASH_REDIS_REST_URL ?? "";
+const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN ?? "";
 const hasUpstash =
-  Boolean(process.env.UPSTASH_REDIS_REST_URL) && Boolean(process.env.UPSTASH_REDIS_REST_TOKEN);
+  upstashUrl.startsWith("https://") &&
+  !upstashUrl.includes("xxx") &&
+  upstashToken.length > 10;
 
 const redis = hasUpstash
   ? new Redis({

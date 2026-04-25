@@ -16,14 +16,6 @@ export const logger = pino({
     ],
     censor: "[REDACTED]",
   },
-  ...(isDev
-    ? {
-        transport: {
-          target: "pino-pretty",
-          options: { colorize: true, translateTime: "SYS:standard" },
-        },
-      }
-    : {}),
 });
 
 export type Logger = typeof logger;

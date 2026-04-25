@@ -27,7 +27,10 @@ const envSchema = z.object({
   INNGEST_EVENT_KEY: z.string().optional().default(""),
   INNGEST_SIGNING_KEY: z.string().optional().default(""),
 
-  UPSTASH_REDIS_REST_URL: z.string().url().optional(),
+  UPSTASH_REDIS_REST_URL: z
+    .string()
+    .optional()
+    .refine((v) => !v || v.startsWith("https://"), { message: "Must be https URL or empty" }),
   UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
 
   ADMIN_EMAILS: z.string().default(""),

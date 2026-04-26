@@ -61,7 +61,7 @@ export const PLANS: Record<Plan, PlanConfig> = {
       "Support email",
     ],
     highlighted: true,
-    cta: "Essayer 7 jours",
+    cta: "Passer Pro",
     limits: {
       projects: 10,
       generationsPerMonth: 100,
@@ -70,7 +70,7 @@ export const PLANS: Record<Plan, PlanConfig> = {
       removeBranding: false,
       apiAccess: false,
     },
-    trialDays: 7,
+    trialDays: 0,
   },
   agency: {
     id: "agency",
@@ -88,7 +88,7 @@ export const PLANS: Record<Plan, PlanConfig> = {
       "Accès API",
       "Support prioritaire",
     ],
-    cta: "Essayer 7 jours",
+    cta: "Passer Agency",
     limits: {
       projects: Number.POSITIVE_INFINITY,
       generationsPerMonth: 1000,
@@ -97,7 +97,7 @@ export const PLANS: Record<Plan, PlanConfig> = {
       removeBranding: true,
       apiAccess: true,
     },
-    trialDays: 7,
+    trialDays: 0,
   },
 };
 

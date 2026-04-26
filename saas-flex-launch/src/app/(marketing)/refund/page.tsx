@@ -12,8 +12,8 @@ export default function RefundPage() {
         <h1 className="font-display text-4xl font-bold">Politique de remboursement</h1>
         <div className="mt-8 space-y-4 text-sm leading-relaxed text-muted-foreground">
           <p>
-            <strong className="text-foreground">Essai gratuit 7 jours</strong> sur les plans Pro et
-            Agency : tu peux annuler avant la fin du trial sans aucun prélèvement.
+            <strong className="text-foreground">Plan Free permanent</strong> pour tester gratuitement
+            les fonctionnalités principales avant de passer à un plan payant.
           </p>
           <p>
             <strong className="text-foreground">Garantie satisfait ou remboursé 14 jours</strong> :

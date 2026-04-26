@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Tarifs",
   description:
-    "Commence gratuitement. Pro 19€/mois (trial 7 jours). Agency 49€/mois. Annulation en 1 clic.",
+    "Commence gratuitement. Pro 19€/mois. Agency 49€/mois. Annulation en 1 clic.",
 };
 
 export default function PricingPage() {

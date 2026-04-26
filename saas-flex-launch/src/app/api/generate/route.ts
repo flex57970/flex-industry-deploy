@@ -3,8 +3,8 @@ import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db/client";
-import { projects } from "@/lib/db/schema";
-import { generateLandingContent } from "@/lib/ai/generate-page";
+import { projects, type LandingContent } from "@/lib/db/schema";
+import { generateLandingContent, generateSection } from "@/lib/ai/generate-page";
 import { toneEnum, languageEnum, priceRangeEnum, ctaGoalEnum } from "@/lib/validations/project";
 import { checkGenerationQuota, recordUsageEvent } from "@/lib/quotas";
 import { errorResponse, handleApiError } from "@/lib/api/errors";
@@ -13,7 +13,12 @@ import { logger } from "@/lib/logger";
 
 export const maxDuration = 60;
 
-const bodySchema = z.object({ projectId: z.string().uuid() });
+const sectionEnum = z.enum(["all", "hero", "features", "socialProof", "pricing", "faq", "cta"]);
+
+const bodySchema = z.object({
+  projectId: z.string().uuid(),
+  section: sectionEnum.default("all"),
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { projectId } = bodySchema.parse(body);
+    const { projectId, section } = bodySchema.parse(body);
 
     const [project] = await db
       .select()
@@ -43,7 +48,9 @@ export async function POST(request: NextRequest) {
 
     if (!project) return errorResponse(404, "Project not found");
 
-    const tone = toneEnum.safeParse(project.tone).success ? toneEnum.parse(project.tone) : "professional";
+    const tone = toneEnum.safeParse(project.tone).success
+      ? toneEnum.parse(project.tone)
+      : "professional";
     const language = languageEnum.safeParse(project.language).success
       ? languageEnum.parse(project.language)
       : "fr";
@@ -54,8 +61,7 @@ export async function POST(request: NextRequest) {
       ? ctaGoalEnum.parse(project.ctaGoal)
       : "signup";
 
-    const start = Date.now();
-    const content = await generateLandingContent({
+    const baseArgs = {
       name: project.name,
       description: project.description,
       tone,
@@ -65,7 +71,17 @@ export async function POST(request: NextRequest) {
       benefits: project.benefits ?? undefined,
       priceRange,
       ctaGoal,
-    });
+    };
+
+    const start = Date.now();
+    let content: LandingContent;
+
+    if (section === "all" || !project.content) {
+      content = await generateLandingContent(baseArgs);
+    } else {
+      const partial = await generateSection(section, baseArgs);
+      content = mergeSection(project.content, section, partial);
+    }
     const durationMs = Date.now() - start;
 
     await db
@@ -75,12 +91,37 @@ export async function POST(request: NextRequest) {
 
     await recordUsageEvent(user.id, "page_generated", {
       projectId: project.id,
+      section,
       durationMs,
     });
 
-    logger.info({ userId: user.id, projectId: project.id, durationMs }, "page generated");
+    logger.info(
+      { userId: user.id, projectId: project.id, section, durationMs },
+      "page generated",
+    );
     return NextResponse.json({ content });
   } catch (err) {
     return handleApiError(err, "POST /api/generate");
+  }
+}
+
+function mergeSection(
+  current: LandingContent,
+  section: Exclude<z.infer<typeof sectionEnum>, "all">,
+  partial: unknown,
+): LandingContent {
+  switch (section) {
+    case "hero":
+      return { ...current, hero: partial as LandingContent["hero"] };
+    case "features":
+      return { ...current, features: partial as LandingContent["features"] };
+    case "socialProof":
+      return { ...current, socialProof: partial as LandingContent["socialProof"] };
+    case "pricing":
+      return { ...current, pricing: partial as LandingContent["pricing"] };
+    case "faq":
+      return { ...current, faq: partial as LandingContent["faq"] };
+    case "cta":
+      return { ...current, cta: partial as LandingContent["cta"] };
   }
 }

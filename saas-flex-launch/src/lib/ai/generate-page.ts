@@ -142,3 +142,62 @@ function validateLandingContent(c: unknown): asserts c is LandingContent {
     throw new Error("Landing content has no FAQ items");
   }
 }
+
+const SECTION_SCHEMA: Record<string, string> = {
+  hero: `{ "eyebrow": string, "title": string, "subtitle": string, "ctaPrimary": string, "ctaSecondary": string }`,
+  features: `[ { "title": string, "description": string, "icon": string } ] (exactly 4 items, lucide icon name)`,
+  socialProof: `[ { "quote": string, "author": string, "role": string } ] (exactly 2 items)`,
+  pricing: `[ { "name": string, "price": string, "interval": "mois"|"an"|"month"|"year", "features": string[] (3-6 items), "highlighted": boolean } ] (exactly 3 tiers, exactly one highlighted=true)`,
+  faq: `[ { "question": string, "answer": string } ] (exactly 5 items)`,
+  cta: `{ "title": string, "subtitle": string, "button": string }`,
+};
+
+const SECTION_RESPONSE_KEY: Record<string, string> = {
+  hero: "hero",
+  features: "features",
+  socialProof: "socialProof",
+  pricing: "pricing",
+  faq: "faq",
+  cta: "cta",
+};
+
+export async function generateSection(
+  section: keyof typeof SECTION_SCHEMA,
+  args: GenerateArgs,
+): Promise<unknown> {
+  const schema = SECTION_SCHEMA[section];
+  if (!schema) throw new Error(`Unknown section: ${section}`);
+
+  const systemPrompt = `You are a senior conversion copywriter regenerating a single section of a landing page.
+You MUST output ONLY valid JSON with a single top-level key matching the section name.
+
+Output format (single JSON object):
+{ "${SECTION_RESPONSE_KEY[section]}": ${schema} }
+
+Hard rules (never violate):
+- Output ONLY that JSON object. No prose, no markdown fences.
+- Write ALL copy in the user's language.
+- Match the requested tone, audience, and pricing/CTA hints.
+- Be specific to the product. No placeholder text.`;
+
+  const userPrompt = buildUserPrompt(args);
+  logger.debug({ section, name: args.name }, "Generating single section");
+
+  let lastError: unknown = null;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const raw = await callOpenAI(systemPrompt, userPrompt);
+      const parsed = JSON.parse(raw) as Record<string, unknown>;
+      const key = SECTION_RESPONSE_KEY[section];
+      if (!key) throw new Error(`Unknown section: ${section}`);
+      const value = parsed[key];
+      if (value === undefined) throw new Error(`Missing key "${key}" in response`);
+      return value;
+    } catch (err) {
+      lastError = err;
+      logger.warn({ err, attempt, section }, "Section generation attempt failed");
+      if (attempt === 2) break;
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error("Section generation failed");
+}

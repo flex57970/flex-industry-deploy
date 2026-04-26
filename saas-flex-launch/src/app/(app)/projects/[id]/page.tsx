@@ -8,7 +8,7 @@ import { and, eq } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { RenderLanding } from "@/components/project/render-landing";
+import { EditableLanding } from "@/components/project/editable-landing";
 import { ProjectActions } from "@/components/project/project-actions";
 
 export default async function ProjectPage({ params }: { params: { id: string } }) {
@@ -74,7 +74,7 @@ export default async function ProjectPage({ params }: { params: { id: string } }
           </CardContent>
         </Card>
       ) : (
-        <RenderLanding content={project.content} />
+        <EditableLanding projectId={project.id} initialContent={project.content} />
       )}
     </div>
   );

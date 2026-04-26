@@ -12,16 +12,18 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is not set");
 }
 
+// Reuse the client across hot-reloads in dev AND across warm serverless invocations.
+// Without this, each Lambda cold-start opens a new pool — exhausting Supabase connection limits.
 const client =
   globalThis.__postgresClient ??
   postgres(connectionString, {
     prepare: false,
-    max: process.env.NODE_ENV === "production" ? 10 : 1,
+    max: 1, // Each serverless function gets its own pool of size 1; transaction pooler handles fan-out.
+    idle_timeout: 20,
+    max_lifetime: 60 * 30, // 30 min
   });
 
-if (process.env.NODE_ENV !== "production") {
-  globalThis.__postgresClient = client;
-}
+globalThis.__postgresClient = client;
 
 export const db = drizzle(client, { schema });
 export { schema };

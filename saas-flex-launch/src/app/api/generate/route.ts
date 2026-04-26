@@ -5,7 +5,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { db } from "@/lib/db/client";
 import { projects } from "@/lib/db/schema";
 import { generateLandingContent } from "@/lib/ai/generate-page";
-import { toneEnum } from "@/lib/validations/project";
+import { toneEnum, languageEnum, priceRangeEnum, ctaGoalEnum } from "@/lib/validations/project";
 import { checkGenerationQuota, recordUsageEvent } from "@/lib/quotas";
 import { errorResponse, handleApiError } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/ratelimit";
@@ -44,6 +44,15 @@ export async function POST(request: NextRequest) {
     if (!project) return errorResponse(404, "Project not found");
 
     const tone = toneEnum.safeParse(project.tone).success ? toneEnum.parse(project.tone) : "professional";
+    const language = languageEnum.safeParse(project.language).success
+      ? languageEnum.parse(project.language)
+      : "fr";
+    const priceRange = priceRangeEnum.safeParse(project.priceRange).success
+      ? priceRangeEnum.parse(project.priceRange)
+      : "medium";
+    const ctaGoal = ctaGoalEnum.safeParse(project.ctaGoal).success
+      ? ctaGoalEnum.parse(project.ctaGoal)
+      : "signup";
 
     const start = Date.now();
     const content = await generateLandingContent({
@@ -51,6 +60,11 @@ export async function POST(request: NextRequest) {
       description: project.description,
       tone,
       audience: project.audience ?? undefined,
+      language,
+      industry: project.industry ?? undefined,
+      benefits: project.benefits ?? undefined,
+      priceRange,
+      ctaGoal,
     });
     const durationMs = Date.now() - start;
 

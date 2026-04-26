@@ -52,7 +52,12 @@ export async function POST(request: NextRequest) {
         name: input.name,
         description: input.description,
         tone: input.tone,
-        audience: input.audience ?? null,
+        audience: input.audience || null,
+        language: input.language,
+        industry: input.industry || null,
+        benefits: input.benefits || null,
+        priceRange: input.priceRange,
+        ctaGoal: input.ctaGoal,
         slug,
       })
       .returning();

@@ -12,9 +12,9 @@ describe("plans", () => {
     expect(free.stripePriceEnv).toBeNull();
   });
 
-  it("pro plan has 7-day trial and 19€ price", () => {
+  it("pro plan has no trial and 19€ price", () => {
     const pro = getPlan("pro");
-    expect(pro.trialDays).toBe(7);
+    expect(pro.trialDays).toBe(0);
     expect(pro.priceMonthly).toBe(19);
   });
 

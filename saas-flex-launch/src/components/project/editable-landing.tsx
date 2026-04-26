@@ -1,32 +1,47 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Edit3, Eye, Loader2, Quote, RefreshCw } from "lucide-react";
+import {
+  Check,
+  Edit3,
+  Eye,
+  Loader2,
+  Plus,
+  Quote,
+  RefreshCw,
+  Trash2,
+} from "lucide-react";
 import type { LandingContent } from "@/lib/db/schema";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { EditableText } from "./editable-text";
+import { StylePanel } from "./style-panel";
 
 type Section = "hero" | "features" | "socialProof" | "pricing" | "faq" | "cta";
 
 export function EditableLanding({
   projectId,
   initialContent,
+  initialPrimaryColor = "#D4AF37",
+  initialAccentColor = "#0D0D0D",
 }: {
   projectId: string;
   initialContent: LandingContent;
+  initialPrimaryColor?: string;
+  initialAccentColor?: string;
 }) {
   const router = useRouter();
   const [content, setContent] = useState<LandingContent>(initialContent);
   const [editMode, setEditMode] = useState(false);
+  const [primaryColor, setPrimaryColor] = useState(initialPrimaryColor);
+  const [accentColor, setAccentColor] = useState(initialAccentColor);
   const [savingPath, setSavingPath] = useState<string | null>(null);
   const [regenerating, setRegenerating] = useState<Section | null>(null);
   const [, startTransition] = useTransition();
 
-  // Persist a partial content update via PATCH /api/projects/[id]
   const saveContent = async (next: LandingContent, path: string) => {
     setSavingPath(path);
     try {
@@ -38,7 +53,6 @@ export function EditableLanding({
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         toast.error("Erreur de sauvegarde", { description: body.error ?? "Réessaie." });
-        return;
       }
     } finally {
       setSavingPath(null);
@@ -72,8 +86,14 @@ export function EditableLanding({
     }
   };
 
+  const cssVars: CSSProperties = {
+    // @ts-expect-error CSS custom properties
+    "--landing-primary": primaryColor,
+    "--landing-accent": accentColor,
+  };
+
   return (
-    <div className="space-y-6">
+    <div style={cssVars} className="space-y-6 [--landing-primary:#D4AF37] [--landing-accent:#0D0D0D]">
       <div className="sticky top-0 z-30 flex items-center justify-between rounded-lg border border-border bg-card/80 p-3 backdrop-blur">
         <div className="flex items-center gap-3 text-sm">
           <Badge variant={editMode ? "gold" : "secondary"}>
@@ -85,15 +105,23 @@ export function EditableLanding({
             </span>
           )}
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setEditMode(!editMode)}
-        >
+        <Button variant="outline" size="sm" onClick={() => setEditMode(!editMode)}>
           {editMode ? <Eye className="h-4 w-4" /> : <Edit3 className="h-4 w-4" />}
           {editMode ? "Aperçu" : "Éditer"}
         </Button>
       </div>
+
+      {editMode && (
+        <StylePanel
+          projectId={projectId}
+          initialPrimary={primaryColor}
+          initialAccent={accentColor}
+          onChange={(p, a) => {
+            setPrimaryColor(p);
+            setAccentColor(a);
+          }}
+        />
+      )}
 
       {/* HERO */}
       <SectionWrapper
@@ -102,10 +130,19 @@ export function EditableLanding({
         onRegenerate={() => regenerateSection("hero")}
         regenerating={regenerating === "hero"}
       >
-        <section className="rounded-2xl border border-flex-gold/30 bg-gradient-to-b from-flex-gold/5 to-transparent p-12 text-center">
+        <section
+          className="rounded-2xl border p-12 text-center"
+          style={{
+            borderColor: `${primaryColor}4D`,
+            background: `linear-gradient(to bottom, ${primaryColor}0D, transparent)`,
+          }}
+        >
           {(editMode || content.hero.eyebrow) && (
-            <div className="mb-4">
-              <Badge variant="gold">
+            <div className="mb-4 inline-block">
+              <span
+                className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold"
+                style={{ backgroundColor: `${primaryColor}1A`, color: primaryColor }}
+              >
                 <EditableText
                   editable={editMode}
                   value={content.hero.eyebrow ?? ""}
@@ -117,7 +154,7 @@ export function EditableLanding({
                     )
                   }
                 />
-              </Badge>
+              </span>
             </div>
           )}
           <h2 className="font-display text-4xl font-bold leading-tight md:text-6xl">
@@ -135,15 +172,15 @@ export function EditableLanding({
               multiline
               value={content.hero.subtitle}
               onChange={(v) =>
-                updateAndSave(
-                  (c) => ({ ...c, hero: { ...c.hero, subtitle: v } }),
-                  "hero.subtitle",
-                )
+                updateAndSave((c) => ({ ...c, hero: { ...c.hero, subtitle: v } }), "hero.subtitle")
               }
             />
           </p>
           <div className="mt-6 flex justify-center gap-3">
-            <span className="inline-flex items-center rounded-md bg-flex-gold px-4 py-2 text-sm font-semibold text-flex-black">
+            <span
+              className="inline-flex items-center rounded-md px-4 py-2 text-sm font-semibold text-flex-black"
+              style={{ backgroundColor: primaryColor }}
+            >
               <EditableText
                 editable={editMode}
                 value={content.hero.ctaPrimary}
@@ -185,7 +222,17 @@ export function EditableLanding({
           <h3 className="font-display text-2xl font-bold">Features</h3>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             {content.features.map((f, idx) => (
-              <Card key={idx}>
+              <Card key={idx} className="relative">
+                {editMode && (
+                  <RemoveButton
+                    onClick={() =>
+                      updateAndSave(
+                        (c) => ({ ...c, features: c.features.filter((_, i) => i !== idx) }),
+                        `features.${idx}.remove`,
+                      )
+                    }
+                  />
+                )}
                 <CardContent className="p-6">
                   <h4 className="font-semibold">
                     <EditableText
@@ -225,12 +272,29 @@ export function EditableLanding({
                 </CardContent>
               </Card>
             ))}
+            {editMode && content.features.length < 8 && (
+              <AddCard
+                label="Ajouter une feature"
+                onClick={() =>
+                  updateAndSave(
+                    (c) => ({
+                      ...c,
+                      features: [
+                        ...c.features,
+                        { title: "Nouvelle feature", description: "Décris ce bénéfice." },
+                      ],
+                    }),
+                    "features.add",
+                  )
+                }
+              />
+            )}
           </div>
         </section>
       </SectionWrapper>
 
       {/* SOCIAL PROOF */}
-      {content.socialProof && content.socialProof.length > 0 && (
+      {(editMode || (content.socialProof && content.socialProof.length > 0)) && (
         <SectionWrapper
           label="Témoignages"
           editMode={editMode}
@@ -240,10 +304,23 @@ export function EditableLanding({
           <section>
             <h3 className="font-display text-2xl font-bold">Témoignages</h3>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
-              {content.socialProof.map((t, idx) => (
-                <Card key={idx}>
+              {(content.socialProof ?? []).map((t, idx) => (
+                <Card key={idx} className="relative">
+                  {editMode && (
+                    <RemoveButton
+                      onClick={() =>
+                        updateAndSave(
+                          (c) => ({
+                            ...c,
+                            socialProof: (c.socialProof ?? []).filter((_, i) => i !== idx),
+                          }),
+                          `socialProof.${idx}.remove`,
+                        )
+                      }
+                    />
+                  )}
                   <CardContent className="p-6">
-                    <Quote className="h-5 w-5 text-flex-gold" />
+                    <Quote className="h-5 w-5" style={{ color: primaryColor }} />
                     <p className="mt-3 italic">
                       "
                       <EditableText
@@ -304,13 +381,30 @@ export function EditableLanding({
                   </CardContent>
                 </Card>
               ))}
+              {editMode && (content.socialProof?.length ?? 0) < 6 && (
+                <AddCard
+                  label="Ajouter un témoignage"
+                  onClick={() =>
+                    updateAndSave(
+                      (c) => ({
+                        ...c,
+                        socialProof: [
+                          ...(c.socialProof ?? []),
+                          { quote: "Excellent produit, je recommande.", author: "Client", role: "Rôle" },
+                        ],
+                      }),
+                      "socialProof.add",
+                    )
+                  }
+                />
+              )}
             </div>
           </section>
         </SectionWrapper>
       )}
 
       {/* PRICING */}
-      {content.pricing && content.pricing.length > 0 && (
+      {(editMode || (content.pricing && content.pricing.length > 0)) && (
         <SectionWrapper
           label="Pricing"
           editMode={editMode}
@@ -320,9 +414,47 @@ export function EditableLanding({
           <section>
             <h3 className="font-display text-2xl font-bold">Tarifs</h3>
             <div className="mt-4 grid gap-4 md:grid-cols-3">
-              {content.pricing.map((p, idx) => (
-                <Card key={idx} className={p.highlighted ? "border-flex-gold/60" : undefined}>
+              {(content.pricing ?? []).map((p, idx) => (
+                <Card
+                  key={idx}
+                  className="relative"
+                  style={p.highlighted ? { borderColor: `${primaryColor}99` } : undefined}
+                >
+                  {editMode && (
+                    <RemoveButton
+                      onClick={() =>
+                        updateAndSave(
+                          (c) => ({
+                            ...c,
+                            pricing: (c.pricing ?? []).filter((_, i) => i !== idx),
+                          }),
+                          `pricing.${idx}.remove`,
+                        )
+                      }
+                    />
+                  )}
                   <CardContent className="p-6">
+                    {editMode && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateAndSave(
+                            (c) => ({
+                              ...c,
+                              pricing: c.pricing?.map((it, i) => ({
+                                ...it,
+                                highlighted: i === idx,
+                              })),
+                            }),
+                            `pricing.${idx}.highlighted`,
+                          )
+                        }
+                        className={`mb-2 text-xs ${p.highlighted ? "font-semibold" : "text-muted-foreground hover:text-foreground"}`}
+                        style={p.highlighted ? { color: primaryColor } : undefined}
+                      >
+                        {p.highlighted ? "★ Mis en avant" : "☆ Mettre en avant"}
+                      </button>
+                    )}
                     <h4 className="font-semibold">
                       <EditableText
                         editable={editMode}
@@ -363,7 +495,7 @@ export function EditableLanding({
                     <ul className="mt-4 space-y-2">
                       {p.features.map((feat, fIdx) => (
                         <li key={fIdx} className="flex items-start gap-2 text-sm">
-                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-flex-gold" />
+                          <Check className="mt-0.5 h-4 w-4 shrink-0" style={{ color: primaryColor }} />
                           <span className="flex-1">
                             <EditableText
                               editable={editMode}
@@ -388,12 +520,83 @@ export function EditableLanding({
                               }
                             />
                           </span>
+                          {editMode && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                updateAndSave(
+                                  (c) => ({
+                                    ...c,
+                                    pricing: c.pricing?.map((it, i) =>
+                                      i === idx
+                                        ? {
+                                            ...it,
+                                            features: it.features.filter((_, fi) => fi !== fIdx),
+                                          }
+                                        : it,
+                                    ),
+                                  }),
+                                  `pricing.${idx}.features.${fIdx}.remove`,
+                                )
+                              }
+                              className="opacity-30 hover:opacity-100"
+                              aria-label="Retirer cette ligne"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          )}
                         </li>
                       ))}
+                      {editMode && (
+                        <li>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateAndSave(
+                                (c) => ({
+                                  ...c,
+                                  pricing: c.pricing?.map((it, i) =>
+                                    i === idx
+                                      ? { ...it, features: [...it.features, "Nouvelle feature"] }
+                                      : it,
+                                  ),
+                                }),
+                                `pricing.${idx}.features.add`,
+                              )
+                            }
+                            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                          >
+                            <Plus className="h-3 w-3" /> Ajouter une ligne
+                          </button>
+                        </li>
+                      )}
                     </ul>
                   </CardContent>
                 </Card>
               ))}
+              {editMode && (content.pricing?.length ?? 0) < 5 && (
+                <AddCard
+                  label="Ajouter un tier"
+                  onClick={() =>
+                    updateAndSave(
+                      (c) => ({
+                        ...c,
+                        pricing: [
+                          ...(c.pricing ?? []),
+                          {
+                            name: "Nouveau plan",
+                            price: "29€",
+                            interval: "mois",
+                            features: ["Feature 1", "Feature 2"],
+                            highlighted: false,
+                          },
+                        ],
+                      }),
+                      "pricing.add",
+                    )
+                  }
+                />
+              )}
             </div>
           </section>
         </SectionWrapper>
@@ -410,7 +613,17 @@ export function EditableLanding({
           <h3 className="font-display text-2xl font-bold">FAQ</h3>
           <div className="mt-4 space-y-2">
             {content.faq.map((item, idx) => (
-              <div key={idx} className="rounded-lg border border-border bg-card p-4">
+              <div key={idx} className="relative rounded-lg border border-border bg-card p-4">
+                {editMode && (
+                  <RemoveButton
+                    onClick={() =>
+                      updateAndSave(
+                        (c) => ({ ...c, faq: c.faq.filter((_, i) => i !== idx) }),
+                        `faq.${idx}.remove`,
+                      )
+                    }
+                  />
+                )}
                 <p className="text-sm font-semibold">
                   <EditableText
                     editable={editMode}
@@ -444,6 +657,26 @@ export function EditableLanding({
                 </p>
               </div>
             ))}
+            {editMode && content.faq.length < 12 && (
+              <button
+                type="button"
+                onClick={() =>
+                  updateAndSave(
+                    (c) => ({
+                      ...c,
+                      faq: [
+                        ...c.faq,
+                        { question: "Nouvelle question ?", answer: "Réponse à compléter." },
+                      ],
+                    }),
+                    "faq.add",
+                  )
+                }
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border p-3 text-sm text-muted-foreground hover:border-foreground hover:text-foreground"
+              >
+                <Plus className="h-4 w-4" /> Ajouter une question
+              </button>
+            )}
           </div>
         </section>
       </SectionWrapper>
@@ -455,7 +688,13 @@ export function EditableLanding({
         onRegenerate={() => regenerateSection("cta")}
         regenerating={regenerating === "cta"}
       >
-        <section className="rounded-2xl border border-flex-gold/30 bg-gradient-to-b from-flex-gold/5 to-transparent p-8 text-center">
+        <section
+          className="rounded-2xl border p-8 text-center"
+          style={{
+            borderColor: `${primaryColor}4D`,
+            background: `linear-gradient(to bottom, ${primaryColor}0D, transparent)`,
+          }}
+        >
           <h3 className="font-display text-2xl font-bold">
             <EditableText
               editable={editMode}
@@ -476,7 +715,10 @@ export function EditableLanding({
             />
           </p>
           <div className="mt-4">
-            <span className="inline-flex items-center rounded-md bg-flex-gold px-4 py-2 text-sm font-semibold text-flex-black">
+            <span
+              className="inline-flex items-center rounded-md px-4 py-2 text-sm font-semibold text-flex-black"
+              style={{ backgroundColor: primaryColor }}
+            >
               <EditableText
                 editable={editMode}
                 value={content.cta.button}
@@ -529,5 +771,30 @@ function SectionWrapper({
       </div>
       {children}
     </div>
+  );
+}
+
+function RemoveButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="absolute right-2 top-2 z-10 rounded-full bg-background p-1 opacity-50 transition-opacity hover:bg-destructive hover:text-destructive-foreground hover:opacity-100"
+      aria-label="Supprimer"
+    >
+      <Trash2 className="h-3 w-3" />
+    </button>
+  );
+}
+
+function AddCard({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex min-h-[120px] items-center justify-center gap-2 rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
+    >
+      <Plus className="h-4 w-4" /> {label}
+    </button>
   );
 }

@@ -74,7 +74,12 @@ export default async function ProjectPage({ params }: { params: { id: string } }
           </CardContent>
         </Card>
       ) : (
-        <EditableLanding projectId={project.id} initialContent={project.content} />
+        <EditableLanding
+          projectId={project.id}
+          initialContent={project.content}
+          initialPrimaryColor={project.primaryColor ?? "#D4AF37"}
+          initialAccentColor={project.accentColor ?? "#0D0D0D"}
+        />
       )}
     </div>
   );

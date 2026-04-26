@@ -31,6 +31,13 @@ export const createProjectSchema = z.object({
   ctaGoal: ctaGoalEnum.default("signup"),
 });
 
+export const themeEnum = z.enum(["dark", "light", "auto"]);
+export type Theme = z.infer<typeof themeEnum>;
+
+const hexColorSchema = z
+  .string()
+  .regex(/^#[0-9a-fA-F]{6}$/i, "Format attendu: #RRGGBB");
+
 export const updateProjectSchema = z.object({
   name: z.string().trim().min(2).max(60).optional(),
   description: z.string().trim().min(20).max(1500).optional(),
@@ -38,6 +45,9 @@ export const updateProjectSchema = z.object({
   audience: z.string().trim().max(120).optional(),
   content: z.unknown().optional(),
   published: z.boolean().optional(),
+  primaryColor: hexColorSchema.optional(),
+  accentColor: hexColorSchema.optional(),
+  theme: themeEnum.optional(),
   customDomain: z
     .string()
     .trim()

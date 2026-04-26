@@ -38,7 +38,10 @@ export default async function PreviewPage({ params }: { params: { slug: string }
 
   if (!project.content) notFound();
 
-  const html = renderLandingHtml(project.name, project.content);
+  const html = renderLandingHtml(project.name, project.content, {
+    primaryColor: project.primaryColor ?? undefined,
+    accentColor: project.accentColor ?? undefined,
+  });
 
   return <div dangerouslySetInnerHTML={{ __html: html }} />;
 }

@@ -22,6 +22,8 @@ export async function GET(_request: NextRequest, { params }: { params: { id: str
 
     const html = renderLandingHtml(project.name, project.content, {
       removeBranding: user.profile.plan === "agency",
+      primaryColor: project.primaryColor ?? undefined,
+      accentColor: project.accentColor ?? undefined,
     });
 
     return new NextResponse(html, {

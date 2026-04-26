@@ -3,9 +3,15 @@ import type { LandingContent } from "@/lib/db/schema";
 export function renderLandingHtml(
   name: string,
   content: LandingContent,
-  opts: { removeBranding?: boolean } = {},
+  opts: { removeBranding?: boolean; primaryColor?: string; accentColor?: string } = {},
 ): string {
-  const { removeBranding = false } = opts;
+  const { removeBranding = false, primaryColor = "#D4AF37", accentColor = "#0D0D0D" } = opts;
+  const primaryAlpha = (alpha: number): string => {
+    const hex = Math.round(alpha * 255)
+      .toString(16)
+      .padStart(2, "0");
+    return `${primaryColor}${hex}`;
+  };
   const esc = (s: string): string =>
     s
       .replace(/&/g, "&amp;")
@@ -57,18 +63,19 @@ export function renderLandingHtml(
   <title>${esc(hero.title)} · ${esc(name)}</title>
   <meta name="description" content="${esc(hero.subtitle)}" />
   <style>
+    :root{--primary:${primaryColor};--accent:${accentColor};--p10:${primaryAlpha(0.06)};--p20:${primaryAlpha(0.12)};--p30:${primaryAlpha(0.3)};--p50:${primaryAlpha(0.5)}}
     *{margin:0;padding:0;box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0D0D0D;color:#F5F5F0;line-height:1.6}
     .container{max-width:1120px;margin:0 auto;padding:0 24px}
     h1,h2,h3{font-family:Georgia,serif;letter-spacing:-0.02em}
-    a{color:#D4AF37;text-decoration:none}
-    .hero{padding:96px 0;text-align:center;background:radial-gradient(ellipse at top,rgba(212,175,55,0.12),transparent 60%)}
-    .eyebrow{display:inline-block;padding:4px 12px;border:1px solid rgba(212,175,55,0.3);border-radius:999px;color:#D4AF37;font-size:13px;margin-bottom:24px}
+    a{color:var(--primary);text-decoration:none}
+    .hero{padding:96px 0;text-align:center;background:radial-gradient(ellipse at top,var(--p20),transparent 60%)}
+    .eyebrow{display:inline-block;padding:4px 12px;border:1px solid var(--p30);border-radius:999px;color:var(--primary);font-size:13px;margin-bottom:24px}
     .hero h1{font-size:clamp(36px,5vw,64px);font-weight:700;line-height:1.1;max-width:800px;margin:0 auto}
     .hero p{font-size:18px;color:#C8C8BE;max-width:640px;margin:24px auto 0}
     .btn{display:inline-block;padding:12px 24px;border-radius:8px;font-weight:600;margin-top:32px;transition:transform .15s}
-    .btn-primary{background:#D4AF37;color:#0D0D0D;box-shadow:0 0 32px rgba(212,175,55,0.3)}
+    .btn-primary{background:var(--primary);color:#0D0D0D;box-shadow:0 0 32px var(--p30)}
     .btn-secondary{border:1px solid #333;color:#F5F5F0;margin-left:8px}
     .btn:hover{transform:translateY(-1px)}
     section{padding:64px 0;border-top:1px solid #1E1E1E}
@@ -78,7 +85,7 @@ export function renderLandingHtml(
     .card h3{font-size:18px;margin-bottom:8px}
     .card p{color:#A0A098;font-size:14px}
     .pricing-card{padding:32px;background:#121212;border:1px solid #222;border-radius:12px}
-    .pricing-card.highlighted{border-color:rgba(212,175,55,0.5);box-shadow:0 0 32px rgba(212,175,55,0.08)}
+    .pricing-card.highlighted{border-color:var(--p50);box-shadow:0 0 32px var(--p10)}
     .price{margin:16px 0 24px}
     .price span{font-size:40px;font-weight:700}
     .price small{color:#A0A098}
@@ -87,7 +94,7 @@ export function renderLandingHtml(
     .faq-item{background:#121212;border:1px solid #222;border-radius:12px;padding:20px;margin-bottom:12px}
     .faq-item summary{cursor:pointer;font-weight:600}
     .faq-item p{margin-top:12px;color:#A0A098;font-size:14px}
-    .cta{text-align:center;background:linear-gradient(180deg,rgba(212,175,55,0.06),transparent);border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:64px 24px}
+    .cta{text-align:center;background:linear-gradient(180deg,var(--p10),transparent);border:1px solid var(--p30);border-radius:16px;padding:64px 24px}
     .cta h2{margin-bottom:16px}
     .cta p{color:#C8C8BE;margin-bottom:8px}
     .flex-branding{text-align:center;padding:32px;color:#7A7A72;font-size:12px;border-top:1px solid #1E1E1E}

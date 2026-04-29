@@ -4,6 +4,13 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
 
+  // Allow larger uploads (chunks are 4MB each, but Server Actions / formData need explicit limit)
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
+  },
+
   async headers() {
     return [
       {

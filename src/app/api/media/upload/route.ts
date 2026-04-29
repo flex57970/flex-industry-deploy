@@ -9,7 +9,10 @@ import { requireAdmin } from '@/lib/auth-utils';
 const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/quicktime', 'video/webm'];
 const allowedExts = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.mp4', '.mov', '.webm'];
 const allowedCategories = ['general', 'immobilier', 'automobile', 'parfumerie'];
-const MAX_SIZE = 100 * 1024 * 1024; // 100MB
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+
+const MAX_SIZE = 500 * 1024 * 1024; // 500MB
 
 export async function POST(req: NextRequest) {
   const auth = await requireAdmin(req);
@@ -25,7 +28,7 @@ export async function POST(req: NextRequest) {
       return Response.json({ message: 'Format de fichier non supporté' }, { status: 400 });
     }
     if (file.size > MAX_SIZE) {
-      return Response.json({ message: 'Fichier trop volumineux (max 100MB)' }, { status: 400 });
+      return Response.json({ message: 'Fichier trop volumineux (max 500MB)' }, { status: 400 });
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());

@@ -10,8 +10,11 @@ import { requireAdmin } from '@/lib/auth-utils';
 const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/quicktime', 'video/webm'];
 const allowedExts = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.mp4', '.mov', '.webm'];
 const allowedCategories = ['general', 'immobilier', 'automobile', 'parfumerie'];
-const MAX_SIZE = 100 * 1024 * 1024; // 100MB
-const MAX_CHUNKS = 200; // ~800MB max with 4MB chunks
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+
+const MAX_SIZE = 500 * 1024 * 1024; // 500MB
+const MAX_CHUNKS = 500; // ~2GB max with 4MB chunks
 
 // Only allow alphanumeric + dash in uploadId to prevent path traversal
 function isSafeUploadId(id: string): boolean {
@@ -45,7 +48,7 @@ export async function POST(req: NextRequest) {
       return Response.json({ message: 'Index de chunk invalide' }, { status: 400 });
     }
     if (totalSize > MAX_SIZE) {
-      return Response.json({ message: 'Fichier trop volumineux (max 100MB)' }, { status: 400 });
+      return Response.json({ message: 'Fichier trop volumineux (max 500MB)' }, { status: 400 });
     }
 
     const ext = path.extname(originalName).toLowerCase();

@@ -22,6 +22,7 @@ const PAGE_LABELS: Record<string, string> = {
   contact: 'Contact',
   'mentions-legales': 'Mentions légales',
   confidentialite: 'Confidentialité',
+  footer: 'Pied de page',
 };
 
 export default function AdminTextesEdit() {

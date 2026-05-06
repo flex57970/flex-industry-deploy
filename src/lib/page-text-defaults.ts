@@ -74,6 +74,29 @@ export const PAGE_TEXT_DEFAULTS: PageTextDefault[] = [
   { page: 'confidentialite', key: 'section5.content', label: '5. Contenu', value: "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, de suppression et de portabilité de vos données. Vous pouvez exercer ces droits en nous contactant à : contact@flex-industry.fr", type: 'textarea', group: 'Section 5', order: 2 },
   { page: 'confidentialite', key: 'section6.title', label: '6. Titre', value: '6. Cookies', type: 'text', group: 'Section 6', order: 1 },
   { page: 'confidentialite', key: 'section6.content', label: '6. Contenu', value: "Ce site utilise uniquement des cookies techniques nécessaires à son bon fonctionnement. Aucun cookie de tracking ou publicitaire n'est utilisé.", type: 'textarea', group: 'Section 6', order: 2 },
+
+  // ─────────── FOOTER ───────────
+  { page: 'footer', key: 'cta.eyebrow', label: 'CTA — étiquette', value: 'Commençons', type: 'text', group: 'Bloc d\'appel à l\'action', order: 1 },
+  { page: 'footer', key: 'cta.title-line-1', label: 'CTA — ligne 1', value: 'Prêt à créer quelque chose', type: 'text', group: 'Bloc d\'appel à l\'action', order: 2 },
+  { page: 'footer', key: 'cta.title-line-2', label: 'CTA — ligne 2 (en italic doré)', value: "d'exceptionnel ?", type: 'text', group: 'Bloc d\'appel à l\'action', order: 3 },
+  { page: 'footer', key: 'cta.subtitle', label: 'CTA — sous-titre', value: 'Discutons de votre projet et donnons vie à votre vision.', type: 'textarea', group: 'Bloc d\'appel à l\'action', order: 4 },
+  { page: 'footer', key: 'cta.button', label: 'CTA — texte bouton', value: 'Démarrer un projet', type: 'text', group: 'Bloc d\'appel à l\'action', order: 5 },
+
+  { page: 'footer', key: 'newsletter.eyebrow', label: 'Newsletter — étiquette', value: 'Newsletter', type: 'text', group: 'Newsletter', order: 1 },
+  { page: 'footer', key: 'newsletter.title-line-1', label: 'Newsletter — ligne 1', value: 'Recevez nos', type: 'text', group: 'Newsletter', order: 2 },
+  { page: 'footer', key: 'newsletter.title-line-2', label: 'Newsletter — ligne 2 (en italic doré)', value: 'dernières réalisations', type: 'text', group: 'Newsletter', order: 3 },
+  { page: 'footer', key: 'newsletter.subtitle', label: 'Newsletter — sous-titre', value: 'Un email par projet. Désinscription en un clic.', type: 'textarea', group: 'Newsletter', order: 4 },
+  { page: 'footer', key: 'newsletter.placeholder', label: 'Newsletter — placeholder email', value: 'votre@email.com', type: 'text', group: 'Newsletter', order: 5 },
+  { page: 'footer', key: 'newsletter.button', label: 'Newsletter — texte bouton', value: "S'inscrire", type: 'text', group: 'Newsletter', order: 6 },
+
+  { page: 'footer', key: 'description', label: 'Description sous le logo', value: 'Agence de communication visuelle premium spécialisée dans la création de contenu cinématographique pour grandes marques.', type: 'textarea', group: 'Bloc principal', order: 1 },
+  { page: 'footer', key: 'instagram-handle', label: 'Instagram — pseudo affiché', value: '@studiot2.9', type: 'text', group: 'Réseaux sociaux', order: 1 },
+  { page: 'footer', key: 'instagram-url', label: 'Instagram — URL complète', value: 'https://www.instagram.com/studiot2.9', type: 'text', group: 'Réseaux sociaux', order: 2 },
+
+  { page: 'footer', key: 'expertises-title', label: 'Colonne Expertises — titre', value: 'Expertises', type: 'text', group: 'Colonnes de liens', order: 1 },
+  { page: 'footer', key: 'agence-title', label: 'Colonne Agence — titre', value: 'Agence', type: 'text', group: 'Colonnes de liens', order: 2 },
+
+  { page: 'footer', key: 'copyright', label: 'Copyright (utilisez {year} pour l\'année automatique)', value: '© {year} Flex.industry. Tous droits réservés.', type: 'text', group: 'Bas de page', order: 1 },
 ];
 
 export const PAGE_LABELS: Record<string, string> = {
@@ -81,4 +104,5 @@ export const PAGE_LABELS: Record<string, string> = {
   contact: 'Contact',
   'mentions-legales': 'Mentions légales',
   confidentialite: 'Confidentialité',
+  footer: 'Pied de page',
 };

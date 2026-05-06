@@ -19,6 +19,7 @@ import {
   Mail,
   Activity,
   Zap,
+  Type,
 } from 'lucide-react';
 
 const sidebarSections = [
@@ -33,9 +34,10 @@ const sidebarSections = [
   {
     label: 'Contenu',
     links: [
-      { name: 'Contenus', href: '/admin/contenus', icon: FileText },
+      { name: 'Textes des pages', href: '/admin/textes', icon: Type },
+      { name: 'Médias par page', href: '/admin/contenus', icon: FileText },
       { name: 'Portfolio', href: '/admin/portfolio', icon: FolderOpen },
-      { name: 'Médias', href: '/admin/medias', icon: ImageIcon },
+      { name: 'Bibliothèque médias', href: '/admin/medias', icon: ImageIcon },
     ],
   },
   {

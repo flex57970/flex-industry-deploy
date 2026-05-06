@@ -5,8 +5,10 @@ import { ArrowUpRight, Mail, MapPin, Phone, CheckCircle, Calendar } from 'lucide
 import ScrollReveal from '@/components/animations/ScrollReveal';
 import HeroIllustration from '@/components/ui/HeroIllustration';
 import { contactAPI } from '@/lib/api';
+import { usePageText } from '@/hooks/usePageText';
 
 export default function ContactPage() {
+  const { t } = usePageText('contact');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -52,14 +54,14 @@ export default function ContactPage() {
         <div className="relative z-10 max-w-[1200px] mx-auto container-px pb-18 md:pb-24 w-full">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/[0.04] mb-8 hero-reveal hero-reveal-1">
             <span className="text-[11px] tracking-[0.2em] uppercase text-white/60 font-medium">
-              Parlons de votre projet
+              {t('hero.eyebrow', 'Parlons de votre projet')}
             </span>
           </div>
           <h1 className="text-[clamp(2.5rem,7vw,6rem)] font-light text-white tracking-[-0.02em] leading-[1] hero-reveal-3">
-            Contact
+            {t('hero.title', 'Contact')}
           </h1>
           <p className="mt-7 text-base md:text-lg text-white/45 font-light max-w-xl hero-reveal hero-reveal-4">
-            Une idée, un projet, une question ? Nous sommes là pour vous accompagner.
+            {t('hero.subtitle', 'Une idée, un projet, une question ? Nous sommes là pour vous accompagner.')}
           </p>
         </div>
 
@@ -79,11 +81,10 @@ export default function ContactPage() {
                     <span className="text-[11px] tracking-[0.15em] uppercase text-[var(--color-accent)] font-semibold">Informations</span>
                   </div>
                   <h2 className="text-2xl md:text-3xl font-light tracking-tight mb-5 leading-snug">
-                    Discutons de votre <span className="font-semibold">vision</span>
+                    {t('info.title', 'Discutons de votre vision')}
                   </h2>
                   <p className="text-gray-500 text-sm leading-relaxed mb-12">
-                    Chaque projet est unique. Partagez-nous votre vision et nous vous proposerons
-                    une approche sur-mesure.
+                    {t('info.description', 'Chaque projet est unique. Partagez-nous votre vision et nous vous proposerons une approche sur-mesure.')}
                   </p>
                 </div>
 
@@ -94,8 +95,8 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-[11px] tracking-[0.15em] uppercase text-gray-400 mb-1 font-semibold">Email</p>
-                      <a href="mailto:contact@flex-industry.fr" className="text-sm text-gray-900 hover:text-[var(--color-accent)] transition-colors font-medium">
-                        contact@flex-industry.fr
+                      <a href={`mailto:${t('info.email', 'contact@flex-industry.fr')}`} className="text-sm text-gray-900 hover:text-[var(--color-accent)] transition-colors font-medium">
+                        {t('info.email', 'contact@flex-industry.fr')}
                       </a>
                     </div>
                   </div>
@@ -106,8 +107,8 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-[11px] tracking-[0.15em] uppercase text-gray-400 mb-1 font-semibold">Téléphone</p>
-                      <a href="tel:+33650986576" className="text-sm text-gray-900 hover:text-[var(--color-accent)] transition-colors font-medium">
-                        +33 6 50 98 65 76
+                      <a href={`tel:${t('info.phone', '+33 6 50 98 65 76').replace(/\s/g, '')}`} className="text-sm text-gray-900 hover:text-[var(--color-accent)] transition-colors font-medium">
+                        {t('info.phone', '+33 6 50 98 65 76')}
                       </a>
                     </div>
                   </div>
@@ -118,12 +119,12 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-[11px] tracking-[0.15em] uppercase text-gray-400 mb-1 font-semibold">Localisation</p>
-                      <p className="text-sm text-gray-900 font-medium">Partout en France</p>
+                      <p className="text-sm text-gray-900 font-medium">{t('info.location', 'Partout en France')}</p>
                     </div>
                   </div>
 
                   <a
-                    href="https://www.instagram.com/studiot2.9?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                    href={t('info.instagram-url', 'https://www.instagram.com/studiot2.9')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-start gap-4 p-5 rounded-2xl bg-[var(--color-warm)] border border-gray-100 hover:border-[var(--color-accent)]/30 transition-all duration-300 group"
@@ -137,7 +138,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-[11px] tracking-[0.15em] uppercase text-gray-400 mb-1 font-semibold">Instagram</p>
-                      <p className="text-sm text-gray-900 font-medium group-hover:text-[var(--color-accent)] transition-colors">@studiot2.9</p>
+                      <p className="text-sm text-gray-900 font-medium group-hover:text-[var(--color-accent)] transition-colors">{t('info.instagram', '@studiot2.9')}</p>
                     </div>
                   </a>
                 </div>
@@ -283,13 +284,13 @@ export default function ContactPage() {
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-16">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent-subtle)] mb-8">
-                <span className="text-[11px] tracking-[0.15em] uppercase text-[var(--color-accent)] font-semibold">Rendez-vous</span>
+                <span className="text-[11px] tracking-[0.15em] uppercase text-[var(--color-accent)] font-semibold">{t('booking.eyebrow', 'Rendez-vous')}</span>
               </div>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight leading-[1.1]">
-                Réservez un <span className="font-semibold">créneau</span>
+                {t('booking.title', 'Réservez un créneau')}
               </h2>
               <p className="mt-6 text-gray-500 text-[15px] leading-relaxed">
-                Préférez un échange en direct ? Réservez un appel de 30 minutes pour discuter de votre projet.
+                {t('booking.subtitle', 'Préférez un échange en direct ? Réservez un appel de 30 minutes pour discuter de votre projet.')}
               </p>
             </div>
           </ScrollReveal>
@@ -300,17 +301,17 @@ export default function ContactPage() {
                 <div className="w-16 h-16 rounded-2xl bg-[var(--color-accent-subtle)] flex items-center justify-center mx-auto mb-8">
                   <Calendar className="w-7 h-7 text-[var(--color-accent)]" />
                 </div>
-                <h3 className="text-xl font-semibold tracking-tight mb-3">Appel découverte — 30 min</h3>
+                <h3 className="text-xl font-semibold tracking-tight mb-3">{t('booking.cta-title', 'Appel découverte — 30 min')}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed max-w-md mx-auto mb-10">
-                  Discutons de votre projet, de vos objectifs et de comment Flex.industry peut vous accompagner. Sans engagement.
+                  {t('booking.cta-description', 'Discutons de votre projet, de vos objectifs et de comment Flex.industry peut vous accompagner. Sans engagement.')}
                 </p>
                 <a
-                  href="https://cal.eu/lucas-guerder-basj80/30min"
+                  href={t('booking.cta-url', 'https://cal.eu/lucas-guerder-basj80/30min')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-gray-900 text-white text-sm px-8 py-4 rounded-full hover:bg-gray-800 transition-all duration-300 font-medium tracking-wide"
                 >
-                  Choisir un créneau
+                  {t('booking.cta-label', 'Choisir un créneau')}
                   <ArrowUpRight className="w-4 h-4" />
                 </a>
                 <p className="mt-6 text-[12px] text-gray-400">

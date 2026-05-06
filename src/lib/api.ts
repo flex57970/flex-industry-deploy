@@ -166,6 +166,16 @@ export const portfolioAPI = {
     fetchAPI(`/portfolio/grids/${gridId}/items`, { method: 'DELETE', body: JSON.stringify({ itemId }), token }),
 };
 
+// Page texts
+export const pageTextsAPI = {
+  getPages: (token: string) => fetchAPI('/page-texts', { token }),
+  getPageTexts: (page: string) => fetchAPI(`/page-texts/${page}`),
+  updatePageTexts: (page: string, texts: { key: string; value: string }[], token: string) =>
+    fetchAPI(`/page-texts/${page}`, { method: 'PUT', body: JSON.stringify({ texts }), token }),
+  resetPage: (page: string, token: string) =>
+    fetchAPI(`/page-texts/${page}`, { method: 'POST', token }),
+};
+
 // Leads
 export const leadsAPI = {
   getAll: (token: string, status?: string) =>

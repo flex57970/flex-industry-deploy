@@ -58,24 +58,21 @@ export default function Footer() {
         {/* CTA Section */}
         <ScrollReveal>
           <div className="py-28 md:py-36 border-b border-white/[0.06] text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/[0.03] mb-10">
-              <span className="text-[11px] tracking-[0.15em] uppercase text-white/40 font-medium">Commençons</span>
-            </div>
-            <h2 className="text-3xl md:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1]">
+            <span className="eyebrow eyebrow-dark mb-10">Commençons</span>
+            <h2 className="heading-display text-3xl md:text-5xl lg:text-6xl text-white mt-10 text-balance">
               Prêt à créer quelque chose
               <br />
-              <span className="font-semibold">d&apos;exceptionnel ?</span>
+              <span className="serif-accent text-[var(--color-accent-light)]">d&apos;exceptionnel ?</span>
             </h2>
-            <p className="mt-8 text-white/35 text-base font-light max-w-md mx-auto">
+            <p className="mt-8 text-white/40 text-base font-light max-w-md mx-auto text-balance">
               Discutons de votre projet et donnons vie à votre vision.
             </p>
             <div className="mt-12">
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 bg-[var(--color-accent)] text-white text-sm px-7 py-3.5 rounded-full hover:bg-[var(--color-accent-dark)] transition-all duration-300 font-medium tracking-wide"
-              >
+              <Link href="/contact" className="btn-premium btn-premium-accent magnetic">
                 Démarrer un projet
-                <ArrowUpRight className="w-4 h-4" />
+                <span className="btn-premium-icon">
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </span>
               </Link>
             </div>
           </div>
@@ -85,9 +82,9 @@ export default function Footer() {
         <ScrollReveal>
           <div className="py-16 border-b border-white/[0.06]">
             <div className="max-w-xl mx-auto text-center">
-              <p className="text-[11px] tracking-[0.15em] uppercase text-white/40 font-semibold mb-4">Newsletter</p>
-              <h3 className="text-2xl md:text-3xl font-light tracking-tight leading-[1.2] mb-4">
-                Recevez nos <span className="font-semibold">dernières réalisations</span>
+              <span className="eyebrow eyebrow-dark mb-4">Newsletter</span>
+              <h3 className="heading-display text-2xl md:text-3xl text-white mt-4 mb-4 text-balance">
+                Recevez nos <span className="serif-accent text-[var(--color-accent-light)]">dernières réalisations</span>
               </h3>
               <p className="text-[13px] text-white/40 mb-8">Un email par projet. Désinscription en un clic.</p>
               <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">

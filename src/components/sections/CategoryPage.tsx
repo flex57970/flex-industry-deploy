@@ -62,15 +62,11 @@ export default function CategoryPage({
         </div>
 
         <div className="relative z-10 max-w-[1200px] mx-auto container-px pb-20 md:pb-28 w-full">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/[0.04] mb-8 hero-reveal hero-reveal-1">
-            <span className="text-[11px] tracking-[0.2em] uppercase text-white/60 font-medium">
-              {heroLabel}
-            </span>
-          </div>
-          <h1 className="text-[clamp(2.5rem,7vw,6rem)] font-light text-white tracking-[-0.02em] leading-[1] hero-reveal-3">
+          <span className="eyebrow eyebrow-dark mb-8 hero-reveal hero-reveal-1">{heroLabel}</span>
+          <h1 className="heading-display text-[clamp(2.5rem,7vw,6.5rem)] text-white mt-8 hero-reveal-3 text-balance">
             {title}
           </h1>
-          <p className="mt-8 text-base md:text-lg text-white/45 font-light max-w-xl hero-reveal hero-reveal-4">
+          <p className="mt-8 text-base md:text-lg text-white/55 font-light max-w-xl hero-reveal hero-reveal-4 text-pretty">
             {subtitle}
           </p>
         </div>
@@ -84,10 +80,8 @@ export default function CategoryPage({
         <div className="max-w-[1200px] mx-auto container-px">
           <div className="max-w-3xl mx-auto text-center">
             <ScrollReveal>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent-subtle)] mb-8">
-                <span className="text-[11px] tracking-[0.15em] uppercase text-[var(--color-accent)] font-semibold">Notre approche</span>
-              </div>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-light tracking-tight leading-snug">
+              <span className="eyebrow eyebrow-dot mb-8">Notre approche</span>
+              <h2 className="heading-display text-2xl md:text-3xl lg:text-4xl text-[var(--color-ink)] mt-8 text-balance leading-[1.15]">
                 {description}
               </h2>
             </ScrollReveal>
@@ -101,11 +95,9 @@ export default function CategoryPage({
           <ScrollReveal>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-20">
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent-subtle)] mb-8">
-                  <span className="text-[11px] tracking-[0.15em] uppercase text-[var(--color-accent)] font-semibold">Nos services</span>
-                </div>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight leading-[1.1]">
-                  Ce que nous <span className="font-semibold">proposons</span>
+                <span className="eyebrow eyebrow-dot mb-8">Nos services</span>
+                <h2 className="heading-display text-3xl md:text-4xl lg:text-5xl text-[var(--color-ink)] mt-8 text-balance">
+                  Ce que nous <span className="serif-accent text-[var(--color-accent)]">proposons</span>
                 </h2>
               </div>
             </div>
@@ -114,12 +106,12 @@ export default function CategoryPage({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((service, i) => (
               <ScrollReveal key={service.title} delay={i * 0.06}>
-                <div className="bg-white p-9 rounded-2xl border border-gray-100 hover:border-gray-200 card-hover group">
-                  <div className="w-12 h-12 rounded-xl bg-[var(--color-accent-subtle)] flex items-center justify-center mb-7">
-                    <span className="text-xs font-bold text-[var(--color-accent)]">0{i + 1}</span>
+                <div className="card-premium p-9 group h-full">
+                  <div className="w-12 h-12 rounded-2xl bg-[var(--color-accent-subtle)] flex items-center justify-center mb-7 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110">
+                    <span className="text-[11px] font-bold tracking-wider text-[var(--color-accent)]">0{i + 1}</span>
                   </div>
-                  <h3 className="text-[15px] font-semibold tracking-tight">{service.title}</h3>
-                  <p className="mt-3.5 text-gray-500 text-sm leading-relaxed">{service.description}</p>
+                  <h3 className="text-[15.5px] font-semibold tracking-tight text-[var(--color-ink)]">{service.title}</h3>
+                  <p className="mt-3.5 text-gray-500 text-sm leading-relaxed text-pretty">{service.description}</p>
                 </div>
               </ScrollReveal>
             ))}
@@ -133,11 +125,9 @@ export default function CategoryPage({
           <div className="max-w-[1200px] mx-auto container-px">
             <ScrollReveal>
               <div className="text-center mb-20">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent-subtle)] mb-8">
-                  <span className="text-[11px] tracking-[0.15em] uppercase text-[var(--color-accent)] font-semibold">Portfolio</span>
-                </div>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight leading-[1.1]">
-                  Nos <span className="font-semibold">réalisations</span>
+                <span className="eyebrow eyebrow-dot mb-8">Portfolio</span>
+                <h2 className="heading-display text-3xl md:text-4xl lg:text-5xl text-[var(--color-ink)] mt-8 text-balance">
+                  Nos <span className="serif-accent text-[var(--color-accent)]">réalisations</span>
                 </h2>
               </div>
             </ScrollReveal>

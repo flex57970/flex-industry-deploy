@@ -95,32 +95,31 @@ export default function Home() {
         <div className="relative z-10 max-w-[1200px] mx-auto container-px text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.04] mb-10 hero-reveal hero-reveal-1">
             <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] animate-pulse" />
-            <span className="text-[11px] tracking-[0.2em] uppercase text-white/60 font-medium">
+            <span className="text-[11px] tracking-[0.22em] uppercase text-white/65 font-semibold">
               Agence de communication visuelle
             </span>
           </div>
 
-          <h1 className="text-[clamp(2.5rem,7vw,6.5rem)] font-light text-white tracking-[-0.02em] leading-[1] hero-reveal-3">
+          <h1 className="heading-display text-[clamp(2.5rem,8vw,7rem)] text-white text-balance hero-reveal-3">
             Nous créons
             <br />
-            <span className="font-semibold">l&apos;extraordinaire</span>
+            <span className="serif-accent text-[var(--color-accent-light)]">l&apos;extraordinaire</span>
           </h1>
 
-          <p className="mt-8 md:mt-10 text-base md:text-lg text-white/50 font-light max-w-lg mx-auto leading-relaxed hero-reveal hero-reveal-4">
+          <p className="mt-10 md:mt-12 text-base md:text-lg text-white/55 font-light max-w-lg mx-auto leading-relaxed hero-reveal hero-reveal-4 text-balance">
             Contenu cinématographique haut de gamme pour les marques qui refusent l&apos;ordinaire.
           </p>
 
-          <div className="mt-12 md:mt-14 flex flex-col sm:flex-row items-center justify-center gap-4 hero-reveal hero-reveal-5">
-            <Link
-              href="/contact"
-              className="bg-[var(--color-accent)] text-white text-sm px-7 py-3.5 rounded-full hover:bg-[var(--color-accent-dark)] transition-all duration-300 font-medium tracking-wide inline-flex items-center gap-2 group"
-            >
+          <div className="mt-14 md:mt-16 flex flex-col sm:flex-row items-center justify-center gap-3 hero-reveal hero-reveal-5">
+            <Link href="/contact" className="btn-premium btn-premium-accent magnetic">
               Démarrer un projet
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              <span className="btn-premium-icon">
+                <ArrowRight className="w-3.5 h-3.5" />
+              </span>
             </Link>
             <Link
               href="#expertises"
-              className="text-white/60 text-sm px-7 py-3.5 rounded-full border border-white/10 hover:bg-white/[0.04] hover:text-white/80 transition-all duration-300 font-medium inline-flex items-center gap-2"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 text-white/65 text-[13.5px] font-medium hover:bg-white/[0.04] hover:text-white/85 hover:border-white/20 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
             >
               <Play className="w-3.5 h-3.5" />
               Découvrir
@@ -134,19 +133,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════ STATS BANNER ═══════ */}
+      {/* ═══════ STATS BANNER (double-bezel premium) ═══════ */}
       <section className="relative z-10 my-16 md:my-24">
         <div className="max-w-[1200px] mx-auto container-px">
-          <div className="bg-white rounded-3xl shadow-xl shadow-black/[0.04] border border-gray-100 p-14 md:p-20">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-14 md:gap-10">
-              {stats.map((stat, i) => (
-                <ScrollReveal key={stat.label} delay={i * 0.08}>
-                  <div className="text-center">
-                    <p className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-gray-900">{stat.value}</p>
-                    <p className="mt-3 text-sm md:text-base text-gray-400 font-medium">{stat.label}</p>
-                  </div>
-                </ScrollReveal>
-              ))}
+          <div className="bezel-shell">
+            <div className="bezel-core p-14 md:p-20">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-14 md:gap-10">
+                {stats.map((stat, i) => (
+                  <ScrollReveal key={stat.label} delay={i * 0.08}>
+                    <div className="text-center">
+                      <p className="heading-display text-4xl md:text-5xl lg:text-6xl font-semibold text-[var(--color-ink)]">{stat.value}</p>
+                      <p className="mt-3 text-[13px] md:text-sm text-gray-400 font-medium tracking-wide">{stat.label}</p>
+                    </div>
+                  </ScrollReveal>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -158,25 +159,23 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-28 items-center">
             <ScrollReveal>
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent-subtle)] mb-8">
-                  <span className="text-[11px] tracking-[0.15em] uppercase text-[var(--color-accent)] font-semibold">À propos</span>
-                </div>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight leading-[1.1]">
+                <span className="eyebrow eyebrow-dot mb-8">À propos</span>
+                <h2 className="heading-display text-3xl md:text-4xl lg:text-5xl text-[var(--color-ink)] mt-8 text-balance">
                   Une vision
                   <br />
-                  <span className="font-semibold">cinématographique</span>
+                  <span className="serif-accent text-[var(--color-accent)]">cinématographique</span>
                 </h2>
-                <p className="mt-8 text-gray-500 leading-relaxed text-[15px]">
+                <p className="mt-8 text-gray-500 leading-relaxed text-[15px] max-w-[55ch] text-pretty">
                   Flex.industry est une agence de communication visuelle premium. Nous créons du contenu
                   cinématographique sur-mesure pour les marques qui exigent l&apos;excellence. Notre approche
                   allie créativité, technique et vision stratégique.
                 </p>
                 <Link
                   href="#expertises"
-                  className="mt-10 inline-flex items-center gap-2 text-sm font-medium text-gray-900 group"
+                  className="mt-10 inline-flex items-center gap-2 text-sm font-medium text-[var(--color-ink)] group"
                 >
                   <span className="link-underline">En savoir plus</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" />
                 </Link>
               </div>
             </ScrollReveal>
@@ -201,19 +200,17 @@ export default function Home() {
           <ScrollReveal>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-20">
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent-subtle)] mb-8">
-                  <span className="text-[11px] tracking-[0.15em] uppercase text-[var(--color-accent)] font-semibold">Nos expertises</span>
-                </div>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight leading-[1.1]">
-                  Des univers <span className="font-semibold">uniques</span>
+                <span className="eyebrow eyebrow-dot mb-8">Nos expertises</span>
+                <h2 className="heading-display text-3xl md:text-4xl lg:text-5xl text-[var(--color-ink)] mt-8 text-balance">
+                  Des univers <span className="serif-accent text-[var(--color-accent)]">uniques</span>
                 </h2>
               </div>
               <Link
                 href="/contact"
-                className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors inline-flex items-center gap-1.5 group"
+                className="text-sm font-medium text-gray-500 hover:text-[var(--color-ink)] transition-colors inline-flex items-center gap-1.5 group"
               >
                 Voir tout
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" />
               </Link>
             </div>
           </ScrollReveal>
@@ -244,11 +241,9 @@ export default function Home() {
         <div className="max-w-[1200px] mx-auto container-px relative z-10">
           <ScrollReveal>
             <div className="text-center mb-20">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/[0.03] mb-8">
-                <span className="text-[11px] tracking-[0.15em] uppercase text-white/50 font-semibold">Portfolio</span>
-              </div>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight text-white leading-[1.1]">
-                Nos dernières <span className="font-semibold">créations</span>
+              <span className="eyebrow eyebrow-dark mb-8">Portfolio</span>
+              <h2 className="heading-display text-3xl md:text-4xl lg:text-5xl text-white mt-8 text-balance">
+                Nos dernières <span className="serif-accent text-[var(--color-accent-light)]">créations</span>
               </h2>
             </div>
           </ScrollReveal>
@@ -273,11 +268,9 @@ export default function Home() {
         <div className="max-w-[1200px] mx-auto container-px">
           <ScrollReveal>
             <div className="text-center mb-20">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent-subtle)] mb-8">
-                <span className="text-[11px] tracking-[0.15em] uppercase text-[var(--color-accent)] font-semibold">Témoignages</span>
-              </div>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight leading-[1.1]">
-                Ce qu&apos;ils <span className="font-semibold">en disent</span>
+              <span className="eyebrow eyebrow-dot mb-8">Témoignages</span>
+              <h2 className="heading-display text-3xl md:text-4xl lg:text-5xl text-[var(--color-ink)] mt-8 text-balance">
+                Ce qu&apos;ils <span className="serif-accent text-[var(--color-accent)]">en disent</span>
               </h2>
             </div>
           </ScrollReveal>
@@ -338,11 +331,9 @@ export default function Home() {
         <div className="max-w-[1200px] mx-auto container-px">
           <ScrollReveal>
             <div className="text-center mb-20">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent-subtle)] mb-8">
-                <span className="text-[11px] tracking-[0.15em] uppercase text-[var(--color-accent)] font-semibold">Notre processus</span>
-              </div>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight leading-[1.1]">
-                Simple. <span className="font-semibold">Efficace.</span>
+              <span className="eyebrow eyebrow-dot mb-8">Notre processus</span>
+              <h2 className="heading-display text-3xl md:text-4xl lg:text-5xl text-[var(--color-ink)] mt-8 text-balance">
+                Simple. <span className="serif-accent text-[var(--color-accent)]">Efficace.</span>
               </h2>
             </div>
           </ScrollReveal>

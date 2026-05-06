@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Outfit, Instrument_Serif } from 'next/font/google';
 import './globals.css';
 import ClientLayout from './client-layout';
 
@@ -8,6 +8,23 @@ const inter = Inter({
   variable: '--font-inter',
   display: 'swap',
   fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+});
+
+// Display sans-serif font for headers — élégant, confident
+const outfit = Outfit({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+  weight: ['200', '300', '400', '500', '600', '700'],
+});
+
+// Editorial serif for accents and special headers — touche luxueuse
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  variable: '--font-serif',
+  display: 'swap',
+  weight: ['400'],
+  style: ['normal', 'italic'],
 });
 
 const SITE_URL = 'https://flex-industry.fr';
@@ -172,7 +189,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${inter.variable} ${outfit.variable} ${instrumentSerif.variable} antialiased`}>
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

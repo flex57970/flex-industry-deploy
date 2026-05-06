@@ -45,14 +45,20 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={`fixed left-0 right-0 z-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           isScrolled
-            ? 'bg-white/80 backdrop-blur-2xl border-b border-gray-100 shadow-[0_1px_2px_rgba(0,0,0,0.03)]'
-            : 'bg-transparent'
+            ? 'top-3 md:top-5'
+            : 'top-0'
         }`}
       >
-        <div className="max-w-[1200px] mx-auto container-px">
-          <div className="flex items-center justify-between h-16 md:h-[72px]">
+        <div className={`mx-auto container-px transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isScrolled ? 'max-w-[1100px]' : 'max-w-[1200px]'
+        }`}>
+          <div className={`flex items-center justify-between transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            isScrolled
+              ? 'h-14 md:h-[60px] px-3 md:px-5 bg-white/75 backdrop-blur-2xl rounded-full border border-black/5 shadow-[0_8px_24px_-12px_rgba(24,23,26,0.12),0_1px_0_rgba(255,255,255,0.6)_inset]'
+              : 'h-16 md:h-[72px] bg-transparent rounded-none'
+          }`}>
             <Link href="/" className="relative z-10">
               <Logo variant={logoVariant} size="md" />
             </Link>
@@ -165,9 +171,12 @@ export default function Navbar() {
                   </Link>
                   <Link
                     href="/contact"
-                    className="bg-gray-900 text-white text-[13px] px-5 py-2.5 rounded-full hover:bg-gray-800 transition-all duration-300 font-medium"
+                    className="btn-premium magnetic"
                   >
                     Nous contacter
+                    <span className="btn-premium-icon">
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </span>
                   </Link>
                 </div>
               )}

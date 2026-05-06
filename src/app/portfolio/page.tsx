@@ -48,15 +48,11 @@ export default function PortfolioPage() {
         </div>
 
         <div className="relative z-10 max-w-[1200px] mx-auto container-px pb-20 md:pb-28 w-full">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/[0.04] mb-8">
-            <span className="text-[11px] tracking-[0.2em] uppercase text-white/60 font-medium">
-              Portfolio
-            </span>
-          </div>
-          <h1 className="text-[clamp(2.5rem,7vw,6rem)] font-light text-white tracking-[-0.02em] leading-[1]">
-            Nos <span className="font-semibold">réalisations</span>
+          <span className="eyebrow eyebrow-dark mb-8">Portfolio</span>
+          <h1 className="heading-display text-[clamp(2.5rem,7vw,6.5rem)] text-white mt-8 text-balance">
+            Nos <span className="serif-accent text-[var(--color-accent-light)]">réalisations</span>
           </h1>
-          <p className="mt-8 text-base md:text-lg text-white/45 font-light max-w-xl">
+          <p className="mt-8 text-base md:text-lg text-white/55 font-light max-w-xl text-pretty">
             Découvrez nos projets à travers nos différentes catégories de production visuelle.
           </p>
         </div>

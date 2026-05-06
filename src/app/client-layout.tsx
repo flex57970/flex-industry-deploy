@@ -15,6 +15,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     <AuthProvider>
       <Loader />
       {!isAdmin && <Tracker />}
+      {!isAdmin && <div className="site-grain" aria-hidden />}
       {!isAdmin && <Navbar />}
       <main className="min-h-screen">{children}</main>
       {!isAdmin && <Footer />}

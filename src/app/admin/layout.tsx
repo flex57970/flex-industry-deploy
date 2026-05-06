@@ -20,6 +20,7 @@ import {
   Activity,
   Zap,
   Type,
+  BarChart3,
 } from 'lucide-react';
 
 const sidebarSections = [
@@ -27,6 +28,7 @@ const sidebarSections = [
     label: 'Business',
     links: [
       { name: 'Vue d\'ensemble', href: '/admin', icon: LayoutDashboard },
+      { name: 'Statistiques', href: '/admin/analytics', icon: BarChart3 },
       { name: 'Leads', href: '/admin/leads', icon: Inbox },
       { name: 'Abonnés', href: '/admin/abonnes', icon: Mail },
     ],

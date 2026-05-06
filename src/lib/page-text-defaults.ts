@@ -41,6 +41,11 @@ export const PAGE_TEXT_DEFAULTS: PageTextDefault[] = [
   { page: 'contact', key: 'booking.cta-description', label: 'Bloc RDV — description carte', value: 'Discutons de votre projet, de vos objectifs et de comment Flex.industry peut vous accompagner. Sans engagement.', type: 'textarea', group: 'Réservation', order: 5 },
   { page: 'contact', key: 'booking.cta-url', label: 'Bloc RDV — URL Cal.com', value: 'https://cal.eu/lucas-guerder-basj80/30min', type: 'text', group: 'Réservation', order: 6 },
   { page: 'contact', key: 'booking.cta-label', label: 'Bloc RDV — texte bouton', value: 'Choisir un créneau', type: 'text', group: 'Réservation', order: 7 },
+  { page: 'contact', key: 'reviews.eyebrow', label: 'Avis Google — étiquette', value: 'Avis clients', type: 'text', group: 'Avis Google', order: 1 },
+  { page: 'contact', key: 'reviews.title', label: 'Avis Google — titre', value: 'Donnez-nous votre avis', type: 'text', group: 'Avis Google', order: 2 },
+  { page: 'contact', key: 'reviews.subtitle', label: 'Avis Google — sous-titre', value: 'Votre avis compte. Partagez votre expérience sur Google pour aider d\'autres clients à nous découvrir.', type: 'textarea', group: 'Avis Google', order: 3 },
+  { page: 'contact', key: 'reviews.url', label: 'Avis Google — URL (laissez vide pour cacher la section)', value: '', type: 'text', group: 'Avis Google', order: 4 },
+  { page: 'contact', key: 'reviews.button', label: 'Avis Google — texte bouton', value: 'Laisser un avis Google', type: 'text', group: 'Avis Google', order: 5 },
 
   // ─────────── MENTIONS LÉGALES ───────────
   { page: 'mentions-legales', key: 'title', label: 'Titre principal', value: 'Mentions légales', type: 'text', group: 'En-tête', order: 1 },

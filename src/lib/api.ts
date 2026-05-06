@@ -166,6 +166,12 @@ export const portfolioAPI = {
     fetchAPI(`/portfolio/grids/${gridId}/items`, { method: 'DELETE', body: JSON.stringify({ itemId }), token }),
 };
 
+// Analytics
+export const analyticsAPI = {
+  getStats: (token: string, range: number = 30) =>
+    fetchAPI(`/analytics?range=${range}`, { token }),
+};
+
 // Page texts
 export const pageTextsAPI = {
   getPages: (token: string) => fetchAPI('/page-texts', { token }),

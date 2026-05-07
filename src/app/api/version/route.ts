@@ -5,8 +5,8 @@
  */
 export async function GET() {
   return Response.json({
-    version: 'V18',
-    deployedAt: '2026-04-23',
+    version: 'V23',
+    deployedAt: '2026-05-07',
     features: {
       cronEndpoint: true,
       cronFallbackSecret: true,
@@ -15,6 +15,11 @@ export async function GET() {
       backupAgent: true,
       reportAgent: true,
       aiAgent: true,
+      pageTexts: true,
+      analytics: true,
+      googleReviews: true,
+      editorialDesign: true,
+      editableFooter: true,
     },
     envVars: {
       CRON_SECRET: Boolean(process.env.CRON_SECRET),

@@ -36,28 +36,82 @@ export default function PortfolioPage() {
 
   return (
     <>
-      {/* Hero */}
-      <section className="relative h-[60vh] min-h-[400px] flex items-end overflow-hidden">
-        <div className="absolute inset-0 bg-[#1c1c22]">
+      {/* ═══════ HERO (Editorial Index) ═══════ */}
+      <section className="relative min-h-[100dvh] flex flex-col justify-end overflow-hidden">
+        <div className="absolute inset-0 bg-[#0f0e10]">
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0f0e10]/70 via-[#0f0e10]/10 to-[#0f0e10]/95" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_30%,transparent_0%,rgba(15,14,16,0.4)_70%)]" />
           <div className="hero-bg-effects" />
-          <div className="hero-grid-line hero-grid-line-v" style={{ left: '25%' }} />
-          <div className="hero-grid-line hero-grid-line-v" style={{ left: '50%' }} />
-          <div className="hero-grid-line hero-grid-line-v" style={{ left: '75%' }} />
-          <div className="hero-grid-line hero-grid-line-h" style={{ top: '33%' }} />
-          <div className="hero-grid-line hero-grid-line-h" style={{ top: '66%' }} />
         </div>
 
-        <div className="relative z-10 max-w-[1200px] mx-auto container-px pb-20 md:pb-28 w-full">
-          <span className="eyebrow eyebrow-dark mb-8">Portfolio</span>
-          <h1 className="heading-display text-[clamp(2.5rem,7vw,6.5rem)] text-white mt-8 text-balance">
-            Nos <span className="serif-accent text-[var(--color-accent-light)]">réalisations</span>
-          </h1>
-          <p className="mt-8 text-base md:text-lg text-white/55 font-light max-w-xl text-pretty">
-            Découvrez nos projets à travers nos différentes catégories de production visuelle.
-          </p>
+        {/* Top metadata bar */}
+        <div className="absolute top-0 left-0 right-0 z-20 pt-28 md:pt-32 hidden md:block pointer-events-none">
+          <div className="max-w-[1280px] mx-auto container-px flex items-start justify-between text-white/40 text-[11px] tracking-[0.2em] uppercase font-mono">
+            <span>Flex.industry · Index</span>
+            <span>Selected works · 2024–2026</span>
+          </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
+        {/* Vertical mark */}
+        <div className="absolute top-0 bottom-0 left-6 md:left-8 z-20 hidden md:flex flex-col items-center justify-center pointer-events-none">
+          <div className="serif-accent text-white/20 text-[clamp(8rem,18vw,14rem)] leading-none select-none italic" aria-hidden>
+            №
+          </div>
+        </div>
+
+        {/* Main content */}
+        <div className="relative z-10 max-w-[1280px] mx-auto container-px pb-16 md:pb-24 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-end">
+            <div className="md:col-span-8 md:col-start-3 lg:col-span-7 lg:col-start-3">
+              <span className="eyebrow eyebrow-dark mb-7 inline-flex">Portfolio</span>
+              <h1 className="heading-display text-[clamp(3rem,9vw,8rem)] text-white text-balance leading-[0.92]">
+                Nos
+              </h1>
+              <p className="serif-accent text-[clamp(1.5rem,3.5vw,2.75rem)] text-[var(--color-accent-light)] mt-3 leading-tight">
+                réalisations
+              </p>
+              <p className="mt-9 text-base md:text-lg text-white/55 font-light max-w-lg text-pretty leading-relaxed">
+                Découvrez nos projets à travers nos différentes catégories de production visuelle.
+              </p>
+            </div>
+
+            <div className="md:col-span-2 md:col-start-11 lg:col-start-11 hidden md:flex flex-col items-end justify-end gap-3 pb-1">
+              <span className="text-[10px] tracking-[0.25em] uppercase text-white/35 font-mono">
+                Explorer
+              </span>
+              <div className="w-px h-16 bg-gradient-to-b from-white/30 to-transparent" />
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom stats bar (live data) */}
+        <div className="relative z-10 border-t border-white/[0.06] bg-[#0a0a0b]/40 backdrop-blur-md">
+          <div className="max-w-[1280px] mx-auto container-px py-4 md:py-5">
+            <div className="flex items-center gap-3 md:gap-5 flex-wrap text-white/55">
+              <span className="text-[9px] md:text-[10px] tracking-[0.25em] uppercase text-white/35 font-mono shrink-0">
+                Sommaire
+              </span>
+              <div className="w-px h-3 bg-white/10 hidden md:block" />
+              <div className="flex items-center gap-3 md:gap-5 flex-wrap">
+                <span className="text-[11px] md:text-[12px] tracking-wide text-white/65 font-light">
+                  <span className="font-mono text-white/45">{String(categories.length).padStart(2, '0')}</span> Catégories
+                </span>
+                <span className="text-white/20 text-[10px]" aria-hidden>·</span>
+                <span className="text-[11px] md:text-[12px] tracking-wide text-white/65 font-light">
+                  <span className="font-mono text-white/45">{String(totalMedia).padStart(2, '0')}</span> Réalisations
+                </span>
+                {categories.slice(0, 3).map((cat) => (
+                  <span key={cat._id} className="flex items-center gap-3 md:gap-5">
+                    <span className="text-white/20 text-[10px]" aria-hidden>·</span>
+                    <span className="text-[11px] md:text-[12px] tracking-wide text-white/65 font-light">
+                      {cat.name}
+                    </span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Stats */}

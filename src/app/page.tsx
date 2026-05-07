@@ -68,9 +68,9 @@ export default function Home() {
 
   return (
     <>
-      {/* ═══════ HERO ═══════ */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-[#1c1c22]">
+      {/* ═══════ HERO (Editorial Cover) ═══════ */}
+      <section className="relative min-h-[100dvh] flex flex-col justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-[#0f0e10]">
           {getMediaUrl('hero') && (
             <MediaSlot
               url={getMediaUrl('hero')}
@@ -79,20 +79,26 @@ export default function Home() {
               overlay
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#1c1c22]/50 via-[#1c1c22]/20 to-[#1c1c22]/70" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0f0e10]/60 via-[#0f0e10]/20 to-[#0f0e10]/85" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(15,14,16,0.5)_85%)]" />
 
           <HeroIllustration slug="home" />
           <div className="hero-bg-effects" />
-          <div className="hero-grid-line hero-grid-line-v" style={{ left: '25%' }} />
-          <div className="hero-grid-line hero-grid-line-v" style={{ left: '50%' }} />
-          <div className="hero-grid-line hero-grid-line-v" style={{ left: '75%' }} />
-          <div className="hero-grid-line hero-grid-line-h" style={{ top: '33%' }} />
-          <div className="hero-grid-line hero-grid-line-h" style={{ top: '66%' }} />
-          <div className="hero-corner hero-corner-tl hidden md:block" />
-          <div className="hero-corner hero-corner-br hidden md:block" />
+          <div className="hero-grid-line hero-grid-line-v hidden md:block" style={{ left: '25%' }} />
+          <div className="hero-grid-line hero-grid-line-v hidden md:block" style={{ left: '50%' }} />
+          <div className="hero-grid-line hero-grid-line-v hidden md:block" style={{ left: '75%' }} />
         </div>
 
-        <div className="relative z-10 max-w-[1200px] mx-auto container-px text-center">
+        {/* Top metadata bar */}
+        <div className="absolute top-0 left-0 right-0 z-20 pt-28 md:pt-32 hidden md:block pointer-events-none">
+          <div className="max-w-[1280px] mx-auto container-px flex items-start justify-between text-white/40 text-[11px] tracking-[0.2em] uppercase font-mono">
+            <span>Flex.industry · Studio</span>
+            <span>Paris · France · Worldwide</span>
+          </div>
+        </div>
+
+        {/* Main content (centered) */}
+        <div className="relative z-10 max-w-[1280px] mx-auto container-px text-center w-full">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.04] mb-10 hero-reveal hero-reveal-1">
             <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] animate-pulse" />
             <span className="text-[11px] tracking-[0.22em] uppercase text-white/65 font-semibold">
@@ -100,7 +106,7 @@ export default function Home() {
             </span>
           </div>
 
-          <h1 className="heading-display text-[clamp(2.5rem,8vw,7rem)] text-white text-balance hero-reveal-3">
+          <h1 className="heading-display text-[clamp(2.5rem,9vw,8rem)] text-white text-balance hero-reveal-3 leading-[0.92]">
             Nous créons
             <br />
             <span className="serif-accent text-[var(--color-accent-light)]">l&apos;extraordinaire</span>
@@ -127,9 +133,27 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 hero-reveal hero-reveal-6">
-          <div className="w-[1px] h-10 bg-gradient-to-b from-white/30 to-transparent" style={{ animation: 'scrollBounce 2s ease-in-out infinite' }} />
+        {/* Bottom expertise strip */}
+        <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-white/[0.06] bg-[#0a0a0b]/40 backdrop-blur-md">
+          <div className="max-w-[1280px] mx-auto container-px py-4 md:py-5">
+            <div className="flex items-center justify-between gap-3 md:gap-5 flex-wrap text-white/55">
+              <div className="flex items-center gap-3 md:gap-5 flex-wrap">
+                <span className="text-[9px] md:text-[10px] tracking-[0.25em] uppercase text-white/35 font-mono shrink-0">
+                  Expertises
+                </span>
+                <div className="w-px h-3 bg-white/10 hidden md:block" />
+                <span className="text-[11px] md:text-[12px] tracking-wide text-white/65 font-light">Immobilier</span>
+                <span className="text-white/20 text-[10px]" aria-hidden>·</span>
+                <span className="text-[11px] md:text-[12px] tracking-wide text-white/65 font-light">Automobile</span>
+                <span className="text-white/20 text-[10px]" aria-hidden>·</span>
+                <span className="text-[11px] md:text-[12px] tracking-wide text-white/65 font-light">Parfumerie</span>
+              </div>
+              <div className="hidden md:flex items-center gap-2 text-white/35">
+                <span className="text-[10px] tracking-[0.25em] uppercase font-mono">Scroll</span>
+                <div className="w-8 h-px bg-white/20" />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

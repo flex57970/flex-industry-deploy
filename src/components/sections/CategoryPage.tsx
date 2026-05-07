@@ -14,6 +14,27 @@ interface CategoryPageProps {
   services: { title: string; description: string }[];
 }
 
+// Editorial chapter numbering — référence à un livre / magazine premium
+const CHAPTER_NUMBERS: Record<string, string> = {
+  immobilier: '01',
+  automobile: '02',
+  parfumerie: '03',
+};
+
+// Mots clés affichés discrètement en bas du hero
+const CHAPTER_TAGS: Record<string, string[]> = {
+  immobilier: ['Vidéo drone', 'Visite virtuelle', 'Photographie', '4K cinéma'],
+  automobile: ['Studio mobile', 'Tracking', 'Color grading', 'Drone'],
+  parfumerie: ['Macro', 'Slow motion', 'Direction artistique', 'Lumière naturelle'],
+};
+
+// Mot italic serif à mettre en accent sous le titre
+const CHAPTER_ACCENTS: Record<string, string> = {
+  immobilier: 'de prestige',
+  automobile: 'en mouvement',
+  parfumerie: 'sensorielle',
+};
+
 export default function CategoryPage({
   title,
   subtitle,
@@ -23,6 +44,9 @@ export default function CategoryPage({
   services,
 }: CategoryPageProps) {
   const { content, getMediaUrl, getMediaType } = usePageContent(pageSlug);
+  const chapterNumber = CHAPTER_NUMBERS[pageSlug] || '01';
+  const chapterTags = CHAPTER_TAGS[pageSlug] || [];
+  const chapterAccent = CHAPTER_ACCENTS[pageSlug] || '';
 
   // Dynamically get gallery items from DB content
   const galleryItems = content
@@ -38,9 +62,10 @@ export default function CategoryPage({
 
   return (
     <>
-      {/* ═══════ HERO ═══════ */}
-      <section className="relative h-[80vh] min-h-[500px] flex items-end overflow-hidden">
-        <div className="absolute inset-0 bg-[#1c1c22]">
+      {/* ═══════ HERO (Editorial Chapter) ═══════ */}
+      <section className="relative min-h-[100dvh] flex flex-col justify-end overflow-hidden">
+        {/* Background media + overlays */}
+        <div className="absolute inset-0 bg-[#0f0e10]">
           {getMediaUrl('hero') && (
             <MediaSlot
               url={getMediaUrl('hero')}
@@ -48,31 +73,85 @@ export default function CategoryPage({
               className="absolute inset-0"
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1c1c22]/90 via-[#1c1c22]/30 to-[#1c1c22]/40" />
+          {/* Dual gradient : top dark for navbar, vignette + bottom darker */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0f0e10]/70 via-[#0f0e10]/10 to-[#0f0e10]/95" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_30%,transparent_0%,rgba(15,14,16,0.4)_70%)]" />
 
           <HeroIllustration slug={pageSlug} />
           <div className="hero-bg-effects" />
-          <div className="hero-grid-line hero-grid-line-v" style={{ left: '25%' }} />
-          <div className="hero-grid-line hero-grid-line-v" style={{ left: '50%' }} />
-          <div className="hero-grid-line hero-grid-line-v" style={{ left: '75%' }} />
-          <div className="hero-grid-line hero-grid-line-h" style={{ top: '33%' }} />
-          <div className="hero-grid-line hero-grid-line-h" style={{ top: '66%' }} />
-          <div className="hero-corner hero-corner-tl hidden md:block" />
-          <div className="hero-corner hero-corner-br hidden md:block" />
         </div>
 
-        <div className="relative z-10 max-w-[1200px] mx-auto container-px pb-20 md:pb-28 w-full">
-          <span className="eyebrow eyebrow-dark mb-8 hero-reveal hero-reveal-1">{heroLabel}</span>
-          <h1 className="heading-display text-[clamp(2.5rem,7vw,6.5rem)] text-white mt-8 hero-reveal-3 text-balance">
-            {title}
-          </h1>
-          <p className="mt-8 text-base md:text-lg text-white/55 font-light max-w-xl hero-reveal hero-reveal-4 text-pretty">
-            {subtitle}
-          </p>
+        {/* Top metadata bar (chapter number + serial) */}
+        <div className="absolute top-0 left-0 right-0 z-20 pt-28 md:pt-32 hidden md:block pointer-events-none">
+          <div className="max-w-[1280px] mx-auto container-px flex items-start justify-between text-white/40 text-[11px] tracking-[0.2em] uppercase font-mono">
+            <span>Flex.industry · Studio</span>
+            <span>{`Chapitre ${chapterNumber} / 03`}</span>
+          </div>
         </div>
 
-        {/* Bottom fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
+        {/* Vertical chapter mark — left edge */}
+        <div className="absolute top-0 bottom-0 left-6 md:left-8 z-20 hidden md:flex flex-col items-center justify-center pointer-events-none">
+          <div className="serif-accent text-white/25 text-[clamp(8rem,18vw,14rem)] leading-none select-none" aria-hidden>
+            {chapterNumber}
+          </div>
+        </div>
+
+        {/* Main content */}
+        <div className="relative z-10 max-w-[1280px] mx-auto container-px pb-16 md:pb-24 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-end">
+            {/* Left column: title block */}
+            <div className="md:col-span-8 md:col-start-3 lg:col-span-7 lg:col-start-3">
+              <span className="eyebrow eyebrow-dark mb-7 inline-flex hero-reveal hero-reveal-1">
+                {heroLabel}
+              </span>
+              <h1 className="heading-display text-[clamp(3rem,9vw,8rem)] text-white text-balance hero-reveal-3 leading-[0.92]">
+                {title}
+              </h1>
+              {chapterAccent && (
+                <p className="serif-accent text-[clamp(1.5rem,3.5vw,2.75rem)] text-[var(--color-accent-light)] mt-3 leading-tight">
+                  {chapterAccent}
+                </p>
+              )}
+              <p className="mt-9 text-base md:text-lg text-white/55 font-light max-w-lg hero-reveal hero-reveal-4 text-pretty leading-relaxed">
+                {subtitle}
+              </p>
+            </div>
+
+            {/* Right column: scroll indicator + meta */}
+            <div className="md:col-span-2 md:col-start-11 lg:col-start-11 hidden md:flex flex-col items-end justify-end gap-3 pb-1">
+              <span className="text-[10px] tracking-[0.25em] uppercase text-white/35 font-mono">
+                Découvrir
+              </span>
+              <div className="w-px h-16 bg-gradient-to-b from-white/30 to-transparent" />
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom tag row — techniques */}
+        {chapterTags.length > 0 && (
+          <div className="relative z-10 border-t border-white/[0.06] bg-[#0a0a0b]/40 backdrop-blur-md">
+            <div className="max-w-[1280px] mx-auto container-px py-4 md:py-5">
+              <div className="flex items-center gap-3 md:gap-5 flex-wrap text-white/55">
+                <span className="text-[9px] md:text-[10px] tracking-[0.25em] uppercase text-white/35 font-mono shrink-0">
+                  Techniques
+                </span>
+                <div className="w-px h-3 bg-white/10 hidden md:block" />
+                <div className="flex items-center gap-3 md:gap-5 flex-wrap">
+                  {chapterTags.map((tag, i) => (
+                    <span key={tag} className="flex items-center gap-3 md:gap-5">
+                      <span className="text-[11px] md:text-[12px] tracking-wide text-white/65 font-light">
+                        {tag}
+                      </span>
+                      {i < chapterTags.length - 1 && (
+                        <span className="text-white/20 text-[10px]" aria-hidden>·</span>
+                      )}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* ═══════ INTRO ═══════ */}
